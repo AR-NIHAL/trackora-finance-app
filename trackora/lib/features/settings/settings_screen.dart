@@ -7,8 +7,26 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: const Center(
-        child: Text('Settings Screen', style: TextStyle(fontSize: 20)),
+      body: ListView(
+        children: const [
+          ListTile(
+            leading: Icon(Icons.dark_mode_outlined),
+            title: Text('Dark Mode'),
+            trailing: Icon(Icons.arrow_forward_ios, size: 16),
+          ),
+          Divider(height: 1),
+          ListTile(
+            leading: Icon(Icons.currency_exchange),
+            title: Text('Currency'),
+            trailing: Icon(Icons.arrow_forward_ios, size: 16),
+          ),
+          Divider(height: 1),
+          ListTile(
+            leading: Icon(Icons.info_outline),
+            title: Text('About App'),
+            trailing: Icon(Icons.arrow_forward_ios, size: 16),
+          ),
+        ],
       ),
     );
   }
