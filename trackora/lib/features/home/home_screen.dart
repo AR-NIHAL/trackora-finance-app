@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:trackora/features/add_transaction/transaction_dummy_data.dart';
+import 'package:trackora/shared/widgets/summary_card.dart';
+import 'package:trackora/shared/widgets/transaction_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
   Widget build(BuildContext context) {
+    final transactions = TransactionStore.transactions;
+    final totalBalance = TransactionStore.totalBalance;
+    final totalIncome = TransactionStore.totalIncome;
+    final totalExpense = TransactionStore.totalExpense;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Expense Tracker')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
+        },
+        child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
             Container(
               width: double.infinity,
@@ -19,17 +34,17 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.blue,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Total Balance',
                     style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
-                    '৳ 25,000',
-                    style: TextStyle(
+                    '৳ ${totalBalance.toStringAsFixed(0)}',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
@@ -38,54 +53,64 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: SummaryCard(
+                    title: 'Income',
+                    amount: '৳ ${totalIncome.toStringAsFixed(0)}',
+                    bgColor: Colors.green.shade50,
+                    textColor: Colors.green,
+                    icon: Icons.arrow_downward,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: SummaryCard(
+                    title: 'Expense',
+                    amount: '৳ ${totalExpense.toStringAsFixed(0)}',
+                    bgColor: Colors.red.shade50,
+                    textColor: Colors.red,
+                    icon: Icons.arrow_upward,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
             const Text(
               'Recent Transactions',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            Expanded(
-              child: ListView(
-                children: const [
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.fastfood)),
-                    title: Text('Food'),
-                    subtitle: Text('Today'),
-                    trailing: Text(
-                      '- ৳500',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            if (transactions.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Center(
+                  child: Text(
+                    'No transactions yet.\nAdd one from the Add tab.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
                   ),
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.directions_bus)),
-                    title: Text('Transport'),
-                    subtitle: Text('Yesterday'),
-                    trailing: Text(
-                      '- ৳200',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(Icons.attach_money)),
-                    title: Text('Salary'),
-                    subtitle: Text('1 Mar 2026'),
-                    trailing: Text(
-                      '+ ৳30,000',
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
+              )
+            else
+              ...transactions.reversed.map(
+                (item) => TransactionCard(
+                  item: item,
+                  onLongPress: () {
+                    TransactionStore.deleteTransaction(item.id);
+                    setState(() {});
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Transaction deleted')),
+                    );
+                  },
+                ),
               ),
-            ),
           ],
         ),
       ),
