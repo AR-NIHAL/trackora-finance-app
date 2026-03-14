@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:trackora/features/add_transaction/transaction_dummy_data.dart';
 import 'package:trackora/features/add_transaction/transaction_model.dart';
+import 'package:trackora/features/add_transaction/transaction_store.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -11,7 +11,6 @@ class AddTransactionScreen extends StatefulWidget {
 
 class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
@@ -19,25 +18,20 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   String _selectedCategory = 'Food';
   DateTime? _selectedDate;
 
-  final List<String> _categories = [
-    'Food',
-    'Transport',
-    'Shopping',
-    'Bills',
-    'Health',
-    'Salary',
-    'Freelance',
-    'Others',
-  ];
+  List<String> get _categories {
+    if (_selectedType == 'Income') {
+      return ['Salary', 'Freelance', 'Bonus', 'Others'];
+    }
+    return ['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Others'];
+  }
 
   Future<void> _pickDate() async {
-    final DateTime today = DateTime.now();
-
+    final today = DateTime.now();
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: today,
+      initialDate: _selectedDate ?? today,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      lastDate: DateTime(2035),
     );
 
     if (pickedDate != null) {
@@ -47,39 +41,40 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     }
   }
 
-  void _saveTransaction() {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedDate == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Please select a date')));
-        return;
-      }
+  Future<void> _saveTransaction() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      final newTransaction = TransactionModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        type: _selectedType,
-        amount: double.parse(_amountController.text.trim()),
-        category: _selectedCategory,
-        note: _noteController.text.trim(),
-        date: _selectedDate!,
-      );
-
-      transactions.add(newTransaction);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Transaction saved successfully')),
-      );
-
-      _amountController.clear();
-      _noteController.clear();
-
-      setState(() {
-        _selectedType = 'Expense';
-        _selectedCategory = 'Food';
-        _selectedDate = null;
-      });
+    if (_selectedDate == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a date')));
+      return;
     }
+
+    final transaction = TransactionModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      type: _selectedType,
+      amount: double.parse(_amountController.text.trim()),
+      category: _selectedCategory,
+      note: _noteController.text.trim(),
+      date: _selectedDate!,
+    );
+
+    await TransactionStore.addTransaction(transaction);
+
+    _amountController.clear();
+    _noteController.clear();
+
+    setState(() {
+      _selectedType = 'Expense';
+      _selectedCategory = 'Food';
+      _selectedDate = null;
+    });
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Transaction saved successfully')),
+    );
   }
 
   @override
@@ -91,7 +86,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final String dateText = _selectedDate == null
+    final dateText = _selectedDate == null
         ? 'Select Date'
         : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}';
 
@@ -107,7 +102,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Row(
                   children: [
@@ -116,6 +111,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         onTap: () {
                           setState(() {
                             _selectedType = 'Expense';
+                            _selectedCategory = 'Food';
                           });
                         },
                         child: Container(
@@ -145,6 +141,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         onTap: () {
                           setState(() {
                             _selectedType = 'Income';
+                            _selectedCategory = 'Salary';
                           });
                         },
                         child: Container(
@@ -172,50 +169,36 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
               TextFormField(
                 controller: _amountController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: const InputDecoration(
                   labelText: 'Amount',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.attach_money),
+                  prefixIcon: Icon(Icons.attach_money),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Amount is required';
                   }
-
                   final amount = double.tryParse(value.trim());
-                  if (amount == null) {
-                    return 'Enter a valid number';
-                  }
-
-                  if (amount <= 0) {
-                    return 'Amount must be greater than 0';
-                  }
-
+                  if (amount == null) return 'Enter a valid number';
+                  if (amount <= 0) return 'Amount must be greater than 0';
                   return null;
                 },
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Category',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.category_outlined),
+                  prefixIcon: Icon(Icons.category_outlined),
                 ),
-                items: _categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
+                items: _categories
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
                 onChanged: (value) {
                   setState(() {
                     _selectedCategory = value!;
@@ -225,19 +208,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _noteController,
-                decoration: InputDecoration(
-                  labelText: 'Note',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  prefixIcon: const Icon(Icons.notes),
+                decoration: const InputDecoration(
+                  labelText: 'Note (optional)',
+                  prefixIcon: Icon(Icons.notes),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Note is required';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
               InkWell(
@@ -273,57 +247,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   child: const Text('Save Transaction'),
                 ),
               ),
-              const SizedBox(height: 24),
-              if (transactions.isNotEmpty)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Saved Transactions (${transactions.length})',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 12),
-              if (transactions.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: transactions.length,
-                  itemBuilder: (context, index) {
-                    final item = transactions[index];
-
-                    return Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: item.type == 'Expense'
-                              ? Colors.red.shade100
-                              : Colors.green.shade100,
-                          child: Icon(
-                            item.type == 'Expense'
-                                ? Icons.arrow_upward
-                                : Icons.arrow_downward,
-                            color: item.type == 'Expense'
-                                ? Colors.red
-                                : Colors.green,
-                          ),
-                        ),
-                        title: Text(item.category),
-                        subtitle: Text(item.note),
-                        trailing: Text(
-                          '${item.type == 'Expense' ? '-' : '+'} ৳${item.amount.toStringAsFixed(0)}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: item.type == 'Expense'
-                                ? Colors.red
-                                : Colors.green,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
             ],
           ),
         ),

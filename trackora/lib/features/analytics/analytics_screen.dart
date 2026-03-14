@@ -1,5 +1,7 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:trackora/features/add_transaction/transaction_dummy_data.dart';
+import 'package:trackora/features/add_transaction/transaction_store.dart';
+import 'package:trackora/shared/widgets/empty_state_card.dart';
 import 'package:trackora/shared/widgets/summary_card.dart';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -12,17 +14,19 @@ class AnalyticsScreen extends StatefulWidget {
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
-    final totalIncome = TransactionStore.totalIncome;
-    final totalExpense = TransactionStore.totalExpense;
-    final balance = TransactionStore.totalBalance;
+    final totalIncome = TransactionStore.currentMonthIncome;
+    final totalExpense = TransactionStore.currentMonthExpense;
+    final balance = totalIncome - totalExpense;
+    final categoryMap = TransactionStore.currentMonthCategoryExpenseMap;
+    final last7Days = TransactionStore.last7DaysExpenses;
 
     String topMessage;
     if (totalExpense == 0 && totalIncome == 0) {
       topMessage = 'No analytics yet. Add transactions first.';
     } else if (totalExpense > totalIncome) {
-      topMessage = 'Your expenses are higher than income.';
+      topMessage = 'Your monthly expense is higher than income.';
     } else {
-      topMessage = 'Good job! Your balance is under control.';
+      topMessage = 'Good job! Your cash flow looks healthy.';
     }
 
     return Scaffold(
@@ -31,19 +35,71 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           Container(
-            height: 180,
-            width: double.infinity,
+            height: 240,
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Center(
-              child: Text(
-                'Chart will be shown here in Module 6/7',
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-            ),
+            child: last7Days.every((e) => e == 0)
+                ? const Center(child: Text('No expense data for last 7 days'))
+                : BarChart(
+                    BarChartData(
+                      gridData: const FlGridData(show: false),
+                      borderData: FlBorderData(show: false),
+                      titlesData: FlTitlesData(
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        leftTitles: const AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 36,
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              const labels = [
+                                'D1',
+                                'D2',
+                                'D3',
+                                'D4',
+                                'D5',
+                                'D6',
+                                'D7',
+                              ];
+                              final index = value.toInt();
+                              if (index < 0 || index >= labels.length) {
+                                return const SizedBox.shrink();
+                              }
+                              return Text(
+                                labels[index],
+                                style: const TextStyle(fontSize: 12),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      barGroups: List.generate(
+                        last7Days.length,
+                        (index) => BarChartGroupData(
+                          x: index,
+                          barRods: [
+                            BarChartRodData(
+                              toY: last7Days[index],
+                              width: 16,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
           ),
           const SizedBox(height: 20),
           Container(
@@ -90,6 +146,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             textColor: Colors.red,
             icon: Icons.arrow_upward,
           ),
+          const SizedBox(height: 24),
+          const Text(
+            'Category Breakdown',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          if (categoryMap.isEmpty)
+            const EmptyStateCard(
+              message: 'No category expense data available yet.',
+            )
+          else
+            ...categoryMap.entries.map(
+              (entry) => Card(
+                child: ListTile(
+                  leading: const Icon(Icons.pie_chart_outline),
+                  title: Text(entry.key),
+                  trailing: Text(
+                    '৳ ${entry.value.toStringAsFixed(0)}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

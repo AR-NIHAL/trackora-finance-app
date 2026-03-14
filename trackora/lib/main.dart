@@ -1,13 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:trackora/core/services/app_settings.dart';
 import 'package:trackora/core/theme/app_theme.dart';
+import 'package:trackora/features/add_transaction/transaction_model.dart';
 import 'package:trackora/shared/widgets/main_nav_screen.dart';
 
-void main() {
-  runApp(const Trackora());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(TransactionModelAdapter());
+  await Hive.openBox<TransactionModel>('transactionsBox');
+  await AppSettings.init();
+
+  runApp(const TrackoraApp());
 }
 
-class Trackora extends StatelessWidget {
-  const Trackora({super.key});
+class TrackoraApp extends StatefulWidget {
+  const TrackoraApp({super.key});
+
+  @override
+  State<TrackoraApp> createState() => _TrackoraAppState();
+}
+
+class _TrackoraAppState extends State<TrackoraApp> {
+  @override
+  void initState() {
+    super.initState();
+    AppSettings.themeNotifier.addListener(_onThemeChanged);
+  }
+
+  @override
+  void dispose() {
+    AppSettings.themeNotifier.removeListener(_onThemeChanged);
+    super.dispose();
+  }
+
+  void _onThemeChanged() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +46,10 @@ class Trackora extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Trackora',
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: AppSettings.themeNotifier.value
+          ? ThemeMode.dark
+          : ThemeMode.light,
       home: const MainNavScreen(),
     );
   }

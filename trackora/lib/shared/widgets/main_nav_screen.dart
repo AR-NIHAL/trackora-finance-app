@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trackora/features/add_transaction/add_transaction.dart';
 import 'package:trackora/features/analytics/analytics_screen.dart';
+import 'package:trackora/features/budget/budget_screen.dart';
 import 'package:trackora/features/home/home_screen.dart';
 import 'package:trackora/features/settings/settings_screen.dart';
 
@@ -14,26 +15,34 @@ class MainNavScreen extends StatefulWidget {
 class _MainNavScreenState extends State<MainNavScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    AnalyticsScreen(),
-    AddTransactionScreen(),
-    SettingsScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  Widget _buildCurrentScreen() {
+    switch (_selectedIndex) {
+      case 0:
+        return const HomeScreen();
+      case 1:
+        return const AnalyticsScreen();
+      case 2:
+        return const AddTransactionScreen();
+      case 3:
+        return const BudgetScreen();
+      case 4:
+        return const SettingsScreen();
+      default:
+        return const HomeScreen();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: _buildCurrentScreen(),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: _onItemTapped,
+        onDestinationSelected: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -49,6 +58,11 @@ class _MainNavScreenState extends State<MainNavScreen> {
             icon: Icon(Icons.add_circle_outline),
             selectedIcon: Icon(Icons.add_circle),
             label: 'Add',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: Icon(Icons.account_balance_wallet),
+            label: 'Budget',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
