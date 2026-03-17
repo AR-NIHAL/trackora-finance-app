@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:trackora/core/services/app_settings.dart';
 import 'package:trackora/core/theme/app_theme.dart';
-import 'package:trackora/features/add_transaction/transaction_model.dart';
 import 'package:trackora/shared/widgets/main_nav_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Hive.initFlutter();
-  Hive.registerAdapter(TransactionModelAdapter());
-  await Hive.openBox<TransactionModel>('transactionsBox');
   await AppSettings.init();
 
   runApp(const TrackoraApp());

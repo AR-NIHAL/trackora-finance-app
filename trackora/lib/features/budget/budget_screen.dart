@@ -12,6 +12,8 @@ class BudgetScreen extends StatefulWidget {
 
 class _BudgetScreenState extends State<BudgetScreen> {
   late TextEditingController _budgetController;
+  double spent = 0;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -21,6 +23,29 @@ class _BudgetScreenState extends State<BudgetScreen> {
           ? ''
           : AppSettings.budgetNotifier.value.toStringAsFixed(0),
     );
+    _loadBudgetData();
+  }
+
+  Future<void> _loadBudgetData() async {
+    final transactions = await TransactionStore.getTransactions();
+    final now = DateTime.now();
+
+    double monthlyExpense = 0;
+    for (final item in transactions) {
+      final isSameMonth =
+          item.date.year == now.year && item.date.month == now.month;
+
+      if (item.type == 'Expense' && isSameMonth) {
+        monthlyExpense += item.amount;
+      }
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      spent = monthlyExpense;
+      _isLoading = false;
+    });
   }
 
   @override
@@ -42,7 +67,6 @@ class _BudgetScreenState extends State<BudgetScreen> {
   @override
   Widget build(BuildContext context) {
     final budget = AppSettings.budgetNotifier.value;
-    final spent = TransactionStore.currentMonthExpense;
     final remaining = budget - spent;
     final progress = budget <= 0 ? 0.0 : (spent / budget).clamp(0.0, 1.0);
 
@@ -64,81 +88,88 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Budget')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          TextField(
-            controller: _budgetController,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              labelText: 'Monthly Budget',
-              prefixIcon: Icon(Icons.account_balance_wallet_outlined),
-            ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _saveBudget,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _loadBudgetData,
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  TextField(
+                    controller: _budgetController,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: 'Monthly Budget',
+                      prefixIcon: Icon(Icons.account_balance_wallet_outlined),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _saveBudget,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text('Save Budget'),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SummaryCard(
+                          title: 'Budget',
+                          amount: budget == 0
+                              ? 'Not Set'
+                              : '৳ ${budget.toStringAsFixed(0)}',
+                          bgColor: Colors.blue.shade50,
+                          textColor: Colors.blue,
+                          icon: Icons.savings_outlined,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SummaryCard(
+                          title: 'Spent',
+                          amount: '৳ ${spent.toStringAsFixed(0)}',
+                          bgColor: Colors.red.shade50,
+                          textColor: Colors.red,
+                          icon: Icons.money_off_csred_outlined,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SummaryCard(
+                    title: 'Remaining',
+                    amount: budget == 0
+                        ? 'Not Set'
+                        : '৳ ${remaining.toStringAsFixed(0)}',
+                    bgColor: Colors.green.shade50,
+                    textColor: Colors.green,
+                    icon: Icons.account_balance,
+                  ),
+                  const SizedBox(height: 20),
+                  LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 12,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    statusText,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: statusColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
-              child: const Text('Save Budget'),
             ),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: SummaryCard(
-                  title: 'Budget',
-                  amount: budget == 0
-                      ? 'Not Set'
-                      : '৳ ${budget.toStringAsFixed(0)}',
-                  bgColor: Colors.blue.shade50,
-                  textColor: Colors.blue,
-                  icon: Icons.savings_outlined,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: SummaryCard(
-                  title: 'Spent',
-                  amount: '৳ ${spent.toStringAsFixed(0)}',
-                  bgColor: Colors.red.shade50,
-                  textColor: Colors.red,
-                  icon: Icons.money_off_csred_outlined,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SummaryCard(
-            title: 'Remaining',
-            amount: budget == 0
-                ? 'Not Set'
-                : '৳ ${remaining.toStringAsFixed(0)}',
-            bgColor: Colors.green.shade50,
-            textColor: Colors.green,
-            icon: Icons.account_balance,
-          ),
-          const SizedBox(height: 20),
-          LinearProgressIndicator(
-            value: progress,
-            minHeight: 12,
-            borderRadius: BorderRadius.circular(100),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            statusText,
-            style: TextStyle(
-              fontSize: 16,
-              color: statusColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
