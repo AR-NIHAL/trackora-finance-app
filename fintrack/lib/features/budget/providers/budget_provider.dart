@@ -1,37 +1,55 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import '../../../core/services/local_storage_service.dart';
 import '../../transactions/providers/transaction_provider.dart';
 import '../data/models/budget_model.dart';
 
 final budgetProvider = StateNotifierProvider<BudgetNotifier, List<BudgetModel>>(
   (ref) {
-    return BudgetNotifier();
+    final storage = ref.read(localStorageServiceProvider);
+    return BudgetNotifier(storage);
   },
 );
 
 class BudgetNotifier extends StateNotifier<List<BudgetModel>> {
-  BudgetNotifier() : super(const []);
+  final LocalStorageService _storage;
 
-  void addBudget(BudgetModel budget) {
+  BudgetNotifier(this._storage) : super(const []);
+
+  Future<void> loadBudgets() async {
+    final budgets = await _storage.getAllBudgets();
+    state = budgets;
+  }
+
+  Future<void> addBudget(BudgetModel budget) async {
     final existingIndex = state.indexWhere(
       (item) => item.category == budget.category,
     );
 
     if (existingIndex != -1) {
-      final updated = [...state];
-      updated[existingIndex] = budget;
-      state = updated;
+      final existingBudget = state[existingIndex];
+
+      final updatedBudget = existingBudget.copyWith(
+        category: budget.category,
+        limitAmount: budget.limitAmount,
+        createdAt: DateTime.now(),
+      );
+
+      await _storage.updateBudget(updatedBudget);
+
+      final updatedList = [...state];
+      updatedList[existingIndex] = updatedBudget;
+      state = updatedList;
       return;
     }
 
+    await _storage.addBudget(budget);
     state = [...state, budget];
   }
 
-  void deleteBudget(String id) {
-    state = state.where((budget) => budget.id != id).toList();
-  }
+  Future<void> updateBudget(BudgetModel updatedBudget) async {
+    await _storage.updateBudget(updatedBudget);
 
-  void updateBudget(BudgetModel updatedBudget) {
     state = state.map((budget) {
       if (budget.id == updatedBudget.id) {
         return updatedBudget;
@@ -40,7 +58,13 @@ class BudgetNotifier extends StateNotifier<List<BudgetModel>> {
     }).toList();
   }
 
-  void clearBudgets() {
+  Future<void> deleteBudget(String id) async {
+    await _storage.deleteBudget(id);
+    state = state.where((budget) => budget.id != id).toList();
+  }
+
+  Future<void> clearBudgets() async {
+    await _storage.clearBudgets();
     state = [];
   }
 }

@@ -37,8 +37,8 @@ class RecentTransactionList extends ConsumerWidget {
           padding: const EdgeInsets.only(bottom: 12),
           child: TransactionTile(
             transaction: transaction,
-            onDelete: () {
-              ref
+            onDelete: () async {
+              await ref
                   .read(transactionProvider.notifier)
                   .deleteTransaction(transaction.id);
             },

@@ -51,7 +51,7 @@ class CategoryDropdown extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         DropdownButtonFormField<String>(
-          value: selectedCategory,
+          initialValue: selectedCategory,
           decoration: InputDecoration(
             hintText: 'Select category',
             filled: true,

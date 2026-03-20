@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'router/app_router.dart';
+import 'app_initializer.dart';
 import 'theme/app_theme.dart';
 import 'theme/theme_provider.dart';
 
@@ -17,7 +17,7 @@ class ExpenseTrackerApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      home: const AppRouter(),
+      home: const AppInitializer(),
     );
   }
 }

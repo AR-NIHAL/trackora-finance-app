@@ -72,7 +72,7 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _updateTransaction() {
+  Future<void> _updateTransaction() async {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
 
@@ -89,9 +89,11 @@ class _EditTransactionScreenState extends ConsumerState<EditTransactionScreen> {
           : _noteController.text.trim(),
     );
 
-    ref
+    await ref
         .read(transactionProvider.notifier)
         .updateTransaction(updatedTransaction);
+
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Transaction updated successfully')),

@@ -1,40 +1,64 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import '../../../core/services/local_storage_service.dart';
 import '../data/models/transaction_model.dart';
 import 'transaction_state.dart';
 
 final transactionProvider =
     StateNotifierProvider<TransactionNotifier, TransactionState>((ref) {
-      return TransactionNotifier();
+      final storage = ref.read(localStorageServiceProvider);
+      return TransactionNotifier(storage);
     });
 
 class TransactionNotifier extends StateNotifier<TransactionState> {
-  TransactionNotifier() : super(TransactionState.initial());
+  final LocalStorageService _storage;
+
+  TransactionNotifier(this._storage) : super(TransactionState.initial());
 
   List<TransactionModel> get allTransactions => state.transactions;
 
-  void addTransaction(TransactionModel transaction) {
-    state = state.copyWith(transactions: [...state.transactions, transaction]);
+  Future<void> loadTransactions() async {
+    final transactions = await _storage.getAllTransactions();
+
+    final sorted = [...transactions]..sort((a, b) => b.date.compareTo(a.date));
+
+    state = state.copyWith(transactions: sorted);
   }
 
-  void deleteTransaction(String id) {
+  Future<void> addTransaction(TransactionModel transaction) async {
+    await _storage.addTransaction(transaction);
+
+    state = state.copyWith(
+      transactions: [...state.transactions, transaction]
+        ..sort((a, b) => b.date.compareTo(a.date)),
+    );
+  }
+
+  Future<void> updateTransaction(TransactionModel updatedTransaction) async {
+    await _storage.updateTransaction(updatedTransaction);
+
+    state = state.copyWith(
+      transactions:
+          state.transactions
+              .map(
+                (tx) =>
+                    tx.id == updatedTransaction.id ? updatedTransaction : tx,
+              )
+              .toList()
+            ..sort((a, b) => b.date.compareTo(a.date)),
+    );
+  }
+
+  Future<void> deleteTransaction(String id) async {
+    await _storage.deleteTransaction(id);
+
     state = state.copyWith(
       transactions: state.transactions.where((tx) => tx.id != id).toList(),
     );
   }
 
-  void updateTransaction(TransactionModel updatedTransaction) {
-    state = state.copyWith(
-      transactions: state.transactions.map((tx) {
-        if (tx.id == updatedTransaction.id) {
-          return updatedTransaction;
-        }
-        return tx;
-      }).toList(),
-    );
-  }
-
-  void clearAllTransactions() {
+  Future<void> clearAllTransactions() async {
+    await _storage.clearTransactions();
     state = state.copyWith(transactions: []);
   }
 }

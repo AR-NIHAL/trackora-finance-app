@@ -33,7 +33,7 @@ class _BudgetFormDialogState extends ConsumerState<BudgetFormDialog> {
     super.dispose();
   }
 
-  void _saveBudget() {
+  Future<void> _saveBudget() async {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
 
@@ -46,7 +46,9 @@ class _BudgetFormDialogState extends ConsumerState<BudgetFormDialog> {
       createdAt: DateTime.now(),
     );
 
-    ref.read(budgetProvider.notifier).addBudget(budget);
+    await ref.read(budgetProvider.notifier).addBudget(budget);
+
+    if (!mounted) return;
 
     Navigator.of(context).pop();
 
@@ -66,7 +68,7 @@ class _BudgetFormDialogState extends ConsumerState<BudgetFormDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: InputDecoration(
                   labelText: 'Category',
                   border: OutlineInputBorder(

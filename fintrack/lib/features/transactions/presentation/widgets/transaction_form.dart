@@ -59,7 +59,42 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _saveTransaction() {
+  // void _saveTransaction() {
+  //   final isValid = _formKey.currentState?.validate() ?? false;
+
+  //   if (!isValid) return;
+
+  //   final amount = double.parse(_amountController.text.trim());
+
+  //   final transaction = TransactionModel(
+  //     id: DateTime.now().microsecondsSinceEpoch.toString(),
+  //     title: _titleController.text.trim(),
+  //     amount: amount,
+  //     type: _selectedType,
+  //     category: _selectedCategory!,
+  //     date: _selectedDate,
+  //     note: _noteController.text.trim().isEmpty
+  //         ? null
+  //         : _noteController.text.trim(),
+  //   );
+
+  //   ref.read(transactionProvider.notifier).addTransaction(transaction);
+
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text('Transaction added successfully')),
+  //   );
+
+  //   _titleController.clear();
+  //   _amountController.clear();
+  //   _noteController.clear();
+
+  //   setState(() {
+  //     _selectedType = 'expense';
+  //     _selectedCategory = null;
+  //     _selectedDate = DateTime.now();
+  //   });
+  // }
+  Future<void> _saveTransaction() async {
     final isValid = _formKey.currentState?.validate() ?? false;
 
     if (!isValid) return;
@@ -78,7 +113,9 @@ class _TransactionFormState extends ConsumerState<TransactionForm> {
           : _noteController.text.trim(),
     );
 
-    ref.read(transactionProvider.notifier).addTransaction(transaction);
+    await ref.read(transactionProvider.notifier).addTransaction(transaction);
+
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Transaction added successfully')),

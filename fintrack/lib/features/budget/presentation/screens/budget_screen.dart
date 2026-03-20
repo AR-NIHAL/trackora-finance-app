@@ -124,8 +124,8 @@ class BudgetScreen extends ConsumerWidget {
 
                       return BudgetCard(
                         item: item,
-                        onDelete: () {
-                          ref
+                        onDelete: () async {
+                          await ref
                               .read(budgetProvider.notifier)
                               .deleteBudget(item.budget.id);
                         },
