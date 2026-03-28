@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trackora/core/services/app_settings.dart';
 import 'package:trackora/core/theme/app_theme.dart';
-import 'package:trackora/shared/widgets/main_nav_screen.dart';
+import 'package:trackora/widgets/main_nav_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

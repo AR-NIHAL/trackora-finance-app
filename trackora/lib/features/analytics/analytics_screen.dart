@@ -1,9 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:trackora/features/add_transaction/transaction_model.dart';
 import 'package:trackora/features/add_transaction/transaction_store.dart';
-import 'package:trackora/shared/widgets/empty_state_card.dart';
-import 'package:trackora/shared/widgets/summary_card.dart';
+import 'package:trackora/widgets/empty_state_card.dart';
+import 'package:trackora/widgets/summary_card.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});

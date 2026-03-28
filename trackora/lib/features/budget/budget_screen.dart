@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trackora/core/services/app_settings.dart';
 import 'package:trackora/features/add_transaction/transaction_store.dart';
-import 'package:trackora/shared/widgets/summary_card.dart';
+import 'package:trackora/widgets/summary_card.dart';
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
