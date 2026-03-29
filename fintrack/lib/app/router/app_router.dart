@@ -34,7 +34,7 @@ class _AppRouterState extends State<AppRouter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_titles[_currentIndex])),
+      // appBar: AppBar(title: Text(_titles[_currentIndex])),
       body: _screens[_currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,

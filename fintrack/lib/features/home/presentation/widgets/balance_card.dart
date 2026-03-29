@@ -2,15 +2,8 @@ import 'package:flutter/material.dart';
 
 class BalanceCard extends StatelessWidget {
   final double balance;
-  final double income;
-  final double expense;
 
-  const BalanceCard({
-    super.key,
-    required this.balance,
-    required this.income,
-    required this.expense,
-  });
+  const BalanceCard({super.key, required this.balance});
 
   String _formatAmount(double value) {
     return value.toStringAsFixed(2);
@@ -18,102 +11,54 @@ class BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0F766E), Color(0xFF14B8A6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Total Balance',
-            style: TextStyle(color: Colors.white70, fontSize: 15),
+    return Material(
+      elevation: 18,
+      shadowColor: Colors.black.withOpacity(0.16),
+      borderRadius: BorderRadius.circular(30),
+      color: Colors.transparent,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 26),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF0F8F86), Color(0xFF22C7B8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 10),
-          Text(
-            '৳ ${_formatAmount(balance)}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF14B8A6).withOpacity(0.20),
+              blurRadius: 28,
+              spreadRadius: 2,
+              offset: const Offset(0, 14),
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _InfoItem(
-                  label: 'Income',
-                  value: '৳ ${_formatAmount(income)}',
-                  icon: Icons.arrow_downward,
-                ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Total Balance',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _InfoItem(
-                  label: 'Expense',
-                  value: '৳ ${_formatAmount(expense)}',
-                  icon: Icons.arrow_upward,
-                ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              '৳ ${_formatAmount(balance)}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 34,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.5,
               ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
-    );
-  }
-}
-
-class _InfoItem extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-
-  const _InfoItem({
-    required this.label,
-    required this.value,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 18,
-          backgroundColor: Colors.white24,
-          child: Icon(icon, color: Colors.white, size: 18),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(color: Colors.white70, fontSize: 13),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
