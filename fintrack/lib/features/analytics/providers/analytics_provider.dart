@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import '../../transactions/data/models/transaction_model.dart';
 import '../../transactions/providers/transaction_provider.dart';
 
