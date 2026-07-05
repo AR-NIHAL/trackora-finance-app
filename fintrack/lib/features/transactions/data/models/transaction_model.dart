@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 part 'transaction_model.g.dart';
 
 @HiveType(typeId: 0)
-@immutable
 class TransactionModel extends HiveObject {
   @HiveField(0)
   final String id;

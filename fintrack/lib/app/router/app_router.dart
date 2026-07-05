@@ -23,14 +23,6 @@ class _AppRouterState extends State<AppRouter> {
     SettingsScreen(),
   ];
 
-  final List<String> _titles = const [
-    'Home',
-    'Analytics',
-    'Add Transaction',
-    'Budget',
-    'Settings',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

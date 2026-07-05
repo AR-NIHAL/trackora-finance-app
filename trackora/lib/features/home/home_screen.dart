@@ -271,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _selectedType,
+                          initialValue: _selectedType,
                           decoration: const InputDecoration(labelText: 'Type'),
                           items: const [
                             DropdownMenuItem(value: 'All', child: Text('All')),
@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _selectedCategory,
+                          initialValue: _selectedCategory,
                           decoration: const InputDecoration(
                             labelText: 'Category',
                           ),

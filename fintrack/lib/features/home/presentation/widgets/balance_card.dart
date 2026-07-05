@@ -13,7 +13,7 @@ class BalanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 18,
-      shadowColor: Colors.black.withOpacity(0.16),
+      shadowColor: Colors.black.withValues(alpha: 0.16),
       borderRadius: BorderRadius.circular(30),
       color: Colors.transparent,
       child: Container(
@@ -28,7 +28,7 @@ class BalanceCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF14B8A6).withOpacity(0.20),
+              color: const Color(0xFF14B8A6).withValues(alpha: 0.20),
               blurRadius: 28,
               spreadRadius: 2,
               offset: const Offset(0, 14),

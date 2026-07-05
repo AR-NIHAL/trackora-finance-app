@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 part 'budget_model.g.dart';
 
 @HiveType(typeId: 1)
-@immutable
 class BudgetModel extends HiveObject {
   @HiveField(0)
   final String id;
