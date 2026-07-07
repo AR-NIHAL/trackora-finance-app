@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/widgets/app_scaffold.dart';
+import '../../../ai/presentation/widgets/budget_suggestion_dialog.dart';
 import '../../providers/budget_provider.dart';
 import '../widgets/budget_card.dart';
 import '../widgets/budget_form_dialog.dart';
@@ -16,6 +17,13 @@ class BudgetScreen extends ConsumerWidget {
     await showDialog(
       context: context,
       builder: (_) => const BudgetFormDialog(),
+    );
+  }
+
+  Future<void> _openSuggestionDialog(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (_) => const BudgetSuggestionDialog(),
     );
   }
 
@@ -40,6 +48,16 @@ class BudgetScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+              OutlinedButton.icon(
+                onPressed: () => _openSuggestionDialog(context),
+                icon: const Icon(Icons.auto_awesome, size: 18),
+                label: const Text('Suggest'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.teal,
+                  side: const BorderSide(color: Colors.teal),
+                ),
+              ),
+              const SizedBox(width: 8),
               FilledButton.icon(
                 onPressed: () => _openBudgetDialog(context),
                 icon: const Icon(Icons.add),
