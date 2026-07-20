@@ -1,0 +1,7 @@
+abstract final class HiveBoxes {
+  static const String transactions = 'transactions';
+  static const String categories = 'categories';
+  static const String budgets = 'budgets';
+  static const String recurring = 'recurring';
+  static const String settings = 'settings';
+}

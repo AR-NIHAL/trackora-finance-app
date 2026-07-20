@@ -1,0 +1,52 @@
+name: trackkora
+description: "A local-first personal finance tracker built with Flutter."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Routing
+  go_router: ^14.8.1
+
+  # Local Storage (Hive Community Edition - actively maintained, freezed support)
+  hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
+
+  # Data Models
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # UI
+  fl_chart: ^0.70.2
+  intl: ^0.20.2
+
+  # Utilities
+  uuid: ^4.5.1
+  csv: ^6.0.0
+  path_provider: ^2.1.5
+  share_plus: ^10.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Code Generation
+  build_runner: ^2.4.14
+  riverpod_generator: ^2.6.3
+  hive_ce_generator: ^1.9.2
+  freezed: ^2.5.8
+  json_serializable: ^6.9.4
+
+flutter:
+  uses-material-design: true
