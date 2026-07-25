@@ -7,6 +7,7 @@ import 'package:trackkora/core/hive/hive_registrar.g.dart';
 import 'package:trackkora/features/categories/data/models/category_model.dart';
 import 'package:trackkora/features/recurring/data/models/recurring_transaction_model.dart';
 import 'package:trackkora/features/transactions/data/models/transaction_model.dart';
+import 'package:trackkora/features/budgets/data/models/budget_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,7 @@ void main() async {
   await Hive.openBox<TransactionModel>(HiveBoxes.transactions);
   await Hive.openBox<CategoryModel>(HiveBoxes.categories);
   await Hive.openBox<RecurringTransactionModel>(HiveBoxes.recurring);
+  await Hive.openBox<BudgetModel>(HiveBoxes.budgets);
 
   runApp(
     const ProviderScope(

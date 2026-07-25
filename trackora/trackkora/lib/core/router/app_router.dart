@@ -103,40 +103,53 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = _calculateSelectedIndex(context);
+
     return Scaffold(
       body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _calculateSelectedIndex(context),
-        onDestinationSelected: (index) => _onItemTapped(index, context),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
-            label: 'Transactions',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.savings_outlined),
-            selectedIcon: Icon(Icons.savings),
-            label: 'Budgets',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/add-transaction'),
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add),
       ),
-      floatingActionButton: _shouldShowFab(context)
-          ? FloatingActionButton(
-              onPressed: () => context.push('/add-transaction'),
-              child: const Icon(Icons.add),
-            )
-          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _Navitem(
+              icon: Icons.dashboard_outlined,
+              selectedIcon: Icons.dashboard,
+              label: 'Dashboard',
+              isSelected: selectedIndex == 0,
+              onTap: () => _onItemTapped(0, context),
+            ),
+            _Navitem(
+              icon: Icons.receipt_long_outlined,
+              selectedIcon: Icons.receipt_long,
+              label: 'Transactions',
+              isSelected: selectedIndex == 1,
+              onTap: () => _onItemTapped(1, context),
+            ),
+            _Navitem(
+              icon: Icons.savings_outlined,
+              selectedIcon: Icons.savings,
+              label: 'Budgets',
+              isSelected: selectedIndex == 2,
+              onTap: () => _onItemTapped(2, context),
+            ),
+            _Navitem(
+              icon: Icons.settings_outlined,
+              selectedIcon: Icons.settings,
+              label: 'Settings',
+              isSelected: selectedIndex == 3,
+              onTap: () => _onItemTapped(3, context),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -161,10 +174,53 @@ class ScaffoldWithNavBar extends StatelessWidget {
         context.go('/settings');
     }
   }
+}
 
-  bool _shouldShowFab(BuildContext context) {
-    final location = GoRouterState.of(context).uri.path;
-    return location.startsWith('/dashboard') ||
-        location.startsWith('/transactions');
+class _Navitem extends StatelessWidget {
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _Navitem({
+    required this.icon,
+    required this.selectedIcon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 64,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isSelected ? selectedIcon : icon,
+              color: color,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: color,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
