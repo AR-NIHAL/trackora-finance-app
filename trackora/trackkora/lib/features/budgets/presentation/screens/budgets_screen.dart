@@ -5,6 +5,7 @@ import 'package:trackkora/features/budgets/domain/entities/budget.dart';
 import 'package:trackkora/features/budgets/presentation/providers/budget_providers.dart';
 import 'package:trackkora/features/budgets/presentation/widgets/budget_card.dart';
 import 'package:trackkora/features/categories/presentation/providers/category_providers.dart';
+import 'package:trackkora/core/utils/currency_utils.dart';
 
 class BudgetsScreen extends ConsumerStatefulWidget {
   const BudgetsScreen({super.key});
@@ -19,6 +20,7 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
   @override
   Widget build(BuildContext context) {
     final budgetsAsync = ref.watch(monthlyBudgetsProvider(_currentMonth));
+    final summaryAsync = ref.watch(monthlyBudgetSummaryProvider(_currentMonth));
 
     return Scaffold(
       appBar: AppBar(
@@ -38,65 +40,81 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
                   DateTime(_currentMonth.year, _currentMonth.month + 1);
             }),
           ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => _showAddBudgetDialog(context),
+          ),
         ],
       ),
-      body: budgetsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
-        data: (budgets) {
-          if (budgets.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.savings, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('No budgets for this month',
-                      style: TextStyle(fontSize: 18, color: Colors.grey)),
-                  SizedBox(height: 8),
-                  Text('Tap + to add a budget',
-                      style: TextStyle(color: Colors.grey)),
-                ],
-              ),
-            );
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: budgets.length,
-            itemBuilder: (context, index) {
-              final budget = budgets[index];
-              return BudgetCard(
-                budget: budget,
-                onDelete: () async {
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (ctx) => AlertDialog(
-                      title: const Text('Delete Budget'),
-                      content: const Text('Are you sure?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx, false),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx, true),
-                          child: const Text('Delete'),
-                        ),
+      body: Column(
+        children: [
+          summaryAsync.when(
+            loading: () => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
+            data: (summary) {
+              if (summary.totalBudgeted == 0) return const SizedBox.shrink();
+              return _BudgetSummaryHeader(summary: summary);
+            },
+          ),
+          Expanded(
+            child: budgetsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Error: $e')),
+              data: (budgets) {
+                if (budgets.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.savings, size: 64, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text('No budgets for this month',
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.grey)),
+                        SizedBox(height: 8),
+                        Text('Tap + to add a budget',
+                            style: TextStyle(color: Colors.grey)),
                       ],
                     ),
                   );
-                  if (confirmed == true) {
-                    ref.read(budgetActionsProvider).delete(budget.id);
-                  }
-                },
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddBudgetDialog(context),
-        child: const Icon(Icons.add),
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: budgets.length,
+                  itemBuilder: (context, index) {
+                    final budget = budgets[index];
+                    return BudgetCard(
+                      budget: budget,
+                      onTap: () => _showEditBudgetDialog(context, budget),
+                      onDelete: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Delete Budget'),
+                            content: const Text('Are you sure?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, true),
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed == true) {
+                          ref.read(budgetActionsProvider).delete(budget.id);
+                        }
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -231,6 +249,173 @@ class _BudgetsScreenState extends ConsumerState<BudgetsScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+
+  void _showEditBudgetDialog(BuildContext context, Budget budget) {
+    final amountController =
+        TextEditingController(text: budget.amount.toStringAsFixed(2));
+
+    final categoriesAsync = ref.read(categoriesProvider);
+    final category = categoriesAsync.whenOrNull(
+      data: (categories) => categories.firstWhere(
+        (c) => c.id == budget.categoryId,
+        orElse: () => categories.first,
+      ),
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Edit Budget'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (category != null)
+              ListTile(
+                leading: Icon(
+                  IconData(category.iconCodePoint, fontFamily: 'MaterialIcons'),
+                  color: Color(category.colorValue),
+                ),
+                title: Text(category.name),
+                subtitle: const Text('Category'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: amountController,
+              decoration: const InputDecoration(
+                labelText: 'Budget Amount',
+                prefixIcon: Icon(Icons.attach_money),
+              ),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final amount = double.tryParse(amountController.text);
+              if (amount == null || amount <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Please enter a valid amount')),
+                );
+                return;
+              }
+
+              final updated = budget.copyWith(amount: amount);
+              ref.read(budgetActionsProvider).update(updated);
+              Navigator.pop(dialogContext);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BudgetSummaryHeader extends StatelessWidget {
+  final BudgetSummary summary;
+  const _BudgetSummaryHeader({required this.summary});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final remaining = summary.remaining;
+    final remainingColor = remaining >= 0 ? Colors.green : Colors.red;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: _SummaryStat(
+              label: 'Budgeted',
+              amount: summary.totalBudgeted,
+              color: Theme.of(context).colorScheme.primary,
+              isDark: isDark,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _SummaryStat(
+              label: 'Spent',
+              amount: summary.totalSpent,
+              color: Colors.orange,
+              isDark: isDark,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _SummaryStat(
+              label: 'Remaining',
+              amount: remaining.abs(),
+              color: remainingColor,
+              isDark: isDark,
+              prefix: remaining >= 0 ? '' : '-',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryStat extends StatelessWidget {
+  final String label;
+  final double amount;
+  final Color color;
+  final bool isDark;
+  final String prefix;
+
+  const _SummaryStat({
+    required this.label,
+    required this.amount,
+    required this.color,
+    required this.isDark,
+    this.prefix = '',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: isDark ? 0.15 : 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: isDark ? 0.3 : 0.2),
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: color.withValues(alpha: 0.8),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '$prefix${CurrencyUtils.format(amount)}',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

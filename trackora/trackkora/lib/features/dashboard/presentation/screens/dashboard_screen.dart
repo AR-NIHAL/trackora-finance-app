@@ -7,6 +7,7 @@ import 'package:trackkora/features/categories/presentation/providers/category_pr
 import 'package:trackkora/features/transactions/domain/entities/transaction_type.dart';
 import 'package:trackkora/core/utils/currency_utils.dart';
 import 'package:trackkora/core/utils/date_utils.dart' as app_date;
+import 'package:trackkora/features/budgets/presentation/providers/budget_providers.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -148,6 +149,8 @@ class DashboardScreen extends ConsumerWidget {
                 },
               ),
               const SizedBox(height: 24),
+              _BudgetOverviewCard(month: month),
+              const SizedBox(height: 24),
               transactionsAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text('Error: $e'),
@@ -222,6 +225,67 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _BudgetOverviewCard extends ConsumerWidget {
+  final DateTime month;
+  const _BudgetOverviewCard({required this.month});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final summaryAsync = ref.watch(monthlyBudgetSummaryProvider(month));
+
+    return summaryAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (summary) {
+        if (summary.totalBudgeted == 0) return const SizedBox.shrink();
+        final isOver = summary.totalSpent > summary.totalBudgeted;
+        final progressColor = isOver ? Colors.red : Colors.green;
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Budget Overview',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    TextButton(
+                      onPressed: () => context.go('/budgets'),
+                      child: const Text('See Budgets'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: summary.utilization.clamp(0.0, 1.0),
+                    backgroundColor: Colors.grey.shade300,
+                    color: progressColor,
+                    minHeight: 10,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '${CurrencyUtils.format(summary.totalSpent)} of ${CurrencyUtils.format(summary.totalBudgeted)} spent (${(summary.utilization * 100).toInt()}%)',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:trackkora/core/hive/hive_adapters.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
+    registerAdapter(BudgetModelAdapter());
     registerAdapter(CategoryModelAdapter());
     registerAdapter(RecurringTransactionModelAdapter());
     registerAdapter(TransactionModelAdapter());
@@ -15,6 +16,7 @@ extension HiveRegistrar on HiveInterface {
 
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
+    registerAdapter(BudgetModelAdapter());
     registerAdapter(CategoryModelAdapter());
     registerAdapter(RecurringTransactionModelAdapter());
     registerAdapter(TransactionModelAdapter());
