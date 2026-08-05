@@ -1,26 +1,26 @@
+import 'package:expense_tracker/core/utils/app_utils.dart';
+import 'package:expense_tracker/features/settings/state/settings_provider.dart';
+import 'package:expense_tracker/shared/models/dummy_categories.dart';
+import 'package:expense_tracker/shared/models/transaction_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RecentTransactionCard extends StatelessWidget {
-  final String title;
-  final String category;
-  final String amount;
-  final String date;
-  final IconData icon;
+class RecentTransactionCard extends ConsumerWidget {
+  final TransactionModel transaction;
 
-  const RecentTransactionCard({
-    super.key,
-    required this.title,
-    required this.category,
-    required this.amount,
-    required this.date,
-    required this.icon,
-  });
-
-  bool get _isExpense => amount.startsWith('-');
+  const RecentTransactionCard({super.key, required this.transaction});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final currencyCode = ref.watch(
+      settingsProvider.select((settings) => settings.currencyCode),
+    );
+    final category = DummyCategories.findById(transaction.categoryId);
+    final isExpense = transaction.isExpense;
+
+    final color = category?.color ?? theme.colorScheme.secondary;
+    final iconData = DummyCategories.iconFor(category?.iconName);
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -42,9 +42,9 @@ class RecentTransactionCard extends StatelessWidget {
             width: 48,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: theme.colorScheme.secondaryContainer,
+              color: color.withValues(alpha: 0.14),
             ),
-            child: Icon(icon, color: theme.colorScheme.onSecondaryContainer),
+            child: Icon(iconData, color: color),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -52,7 +52,7 @@ class RecentTransactionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  transaction.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -61,7 +61,7 @@ class RecentTransactionCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$category • $date',
+                  '${category?.name ?? 'Other'} • ${AppUtils.formatDate(transaction.date)}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -73,10 +73,10 @@ class RecentTransactionCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            amount,
+            '${isExpense ? '-' : '+'}${AppUtils.formatCurrency(transaction.amount, currencyCode)}',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: _isExpense ? Colors.redAccent : Colors.green,
+              color: isExpense ? Colors.redAccent : Colors.green,
             ),
           ),
         ],

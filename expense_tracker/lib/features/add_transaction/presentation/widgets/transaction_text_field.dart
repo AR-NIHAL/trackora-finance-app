@@ -7,6 +7,8 @@ class TransactionTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final String? prefixText;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   const TransactionTextField({
     super.key,
@@ -16,6 +18,8 @@ class TransactionTextField extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.prefixText,
+    this.controller,
+    this.validator,
   });
 
   @override
@@ -33,6 +37,8 @@ class TransactionTextField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextFormField(
+          controller: controller,
+          validator: validator,
           maxLines: maxLines,
           keyboardType: keyboardType,
           textInputAction: textInputAction,

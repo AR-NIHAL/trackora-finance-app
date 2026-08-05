@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class SaveTransactionButton extends StatelessWidget {
-  const SaveTransactionButton({super.key});
+  final VoidCallback onPressed;
+
+  const SaveTransactionButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -9,7 +11,7 @@ class SaveTransactionButton extends StatelessWidget {
       width: double.infinity,
       height: 54,
       child: FilledButton(
-        onPressed: () {},
+        onPressed: onPressed,
         style: FilledButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),

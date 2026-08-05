@@ -1,31 +1,73 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:expense_tracker/app/app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// import 'package:expense_tracker/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const ExpenseTrackerApp());
+  testWidgets('app renders home screen with balance', (tester) async {
+    await tester.pumpWidget(const ProviderScope(child: ExpenseTrackerApp()));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Total Balance'), findsOneWidget);
+    expect(find.text('Recent Transactions'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('navigates between tabs', (tester) async {
+    await tester.pumpWidget(const ProviderScope(child: ExpenseTrackerApp()));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text('Budget'));
+    await tester.pumpAndSettle();
+    expect(find.text('Category Budgets'), findsOneWidget);
+
+    await tester.tap(find.text('Analytics'));
+    await tester.pumpAndSettle();
+    expect(find.text('Total Spending'), findsOneWidget);
+
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    expect(find.text('Dark Mode'), findsOneWidget);
+  });
+
+  testWidgets('add transaction form shows validation', (tester) async {
+    await tester.pumpWidget(const ProviderScope(child: ExpenseTrackerApp()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Save Transaction'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save Transaction'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Please enter a title'), findsOneWidget);
+    expect(find.text('Please enter an amount'), findsOneWidget);
+  });
+
+  testWidgets('adding a transaction reflects on home screen', (tester) async {
+    await tester.pumpWidget(const ProviderScope(child: ExpenseTrackerApp()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).at(0), 'Test Lunch');
+    await tester.enterText(find.byType(TextField).at(1), '25.50');
+
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Food').last);
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Save Transaction'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save Transaction'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Home'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Test Lunch'), findsOneWidget);
   });
 }

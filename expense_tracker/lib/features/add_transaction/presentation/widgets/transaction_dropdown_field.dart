@@ -1,10 +1,11 @@
+import 'package:expense_tracker/shared/models/category_model.dart';
 import 'package:flutter/material.dart';
 
 class TransactionDropdownField extends StatelessWidget {
   final String label;
   final String hintText;
   final String? value;
-  final List<String> items;
+  final List<CategoryModel> items;
   final ValueChanged<String?> onChanged;
 
   const TransactionDropdownField({
@@ -35,7 +36,7 @@ class TransactionDropdownField extends StatelessWidget {
           items: items
               .map(
                 (item) =>
-                    DropdownMenuItem<String>(value: item, child: Text(item)),
+                    DropdownMenuItem<String>(value: item.id, child: Text(item.name)),
               )
               .toList(),
           onChanged: onChanged,

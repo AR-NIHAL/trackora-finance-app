@@ -46,6 +46,34 @@ class TransactionModel {
   bool get isIncome => type == TransactionType.income;
   bool get isExpense => type == TransactionType.expense;
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'amount': amount,
+      'type': type.name,
+      'categoryId': categoryId,
+      'date': date.toIso8601String(),
+      'note': note,
+      'isRecurring': isRecurring,
+    };
+  }
+
+  factory TransactionModel.fromJson(Map<String, dynamic> json) {
+    return TransactionModel(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      type: TransactionType.values.firstWhere(
+        (type) => type.name == json['type'],
+      ),
+      categoryId: json['categoryId'] as String,
+      date: DateTime.parse(json['date'] as String),
+      note: json['note'] as String? ?? '',
+      isRecurring: json['isRecurring'] as bool? ?? false,
+    );
+  }
+
   @override
   String toString() {
     return 'TransactionModel(id: $id, title: $title, amount: $amount, type: $type, categoryId: $categoryId, date: $date, note: $note, isRecurring: $isRecurring)';

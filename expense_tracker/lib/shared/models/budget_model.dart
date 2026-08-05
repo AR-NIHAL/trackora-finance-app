@@ -31,6 +31,26 @@ class BudgetModel {
 
   double get remainingAmount => limitAmount - spentAmount;
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'categoryId': categoryId,
+      'limitAmount': limitAmount,
+      'month': month.toIso8601String(),
+      'spentAmount': spentAmount,
+    };
+  }
+
+  factory BudgetModel.fromJson(Map<String, dynamic> json) {
+    return BudgetModel(
+      id: json['id'] as String,
+      categoryId: json['categoryId'] as String,
+      limitAmount: (json['limitAmount'] as num).toDouble(),
+      month: DateTime.parse(json['month'] as String),
+      spentAmount: (json['spentAmount'] as num?)?.toDouble() ?? 0,
+    );
+  }
+
   bool get isExceeded => spentAmount > limitAmount;
 
   double get progress {

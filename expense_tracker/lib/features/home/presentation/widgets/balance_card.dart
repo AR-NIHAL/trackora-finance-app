@@ -1,12 +1,22 @@
+import 'package:expense_tracker/core/utils/app_utils.dart';
+import 'package:expense_tracker/features/add_transaction/state/transaction_provider.dart';
+import 'package:expense_tracker/features/settings/state/settings_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'amount_overview_chip.dart';
 
-class BalanceSummaryCard extends StatelessWidget {
+class BalanceSummaryCard extends ConsumerWidget {
   const BalanceSummaryCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final balance = ref.watch(totalBalanceProvider);
+    final monthIncome = ref.watch(currentMonthIncomeProvider);
+    final monthExpense = ref.watch(currentMonthExpenseProvider);
+    final currencyCode = ref.watch(
+      settingsProvider.select((settings) => settings.currencyCode),
+    );
 
     return Container(
       width: double.infinity,
@@ -35,27 +45,27 @@ class BalanceSummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '\$12,450.00',
+            AppUtils.formatCurrency(balance, currencyCode),
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: theme.colorScheme.onPrimaryContainer,
             ),
           ),
           const SizedBox(height: 20),
-          const Row(
+          Row(
             children: [
               Expanded(
                 child: AmountOverviewChip(
                   title: 'Month Income',
-                  amount: '\$8,240.00',
+                  amount: AppUtils.formatCurrency(monthIncome, currencyCode),
                   icon: Icons.arrow_downward_rounded,
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: AmountOverviewChip(
                   title: 'Month Expense',
-                  amount: '\$3,180.00',
+                  amount: AppUtils.formatCurrency(monthExpense, currencyCode),
                   icon: Icons.arrow_upward_rounded,
                 ),
               ),

@@ -1,64 +1,61 @@
+import 'package:expense_tracker/features/add_transaction/state/transaction_provider.dart';
+import 'package:expense_tracker/features/home/presentation/widgets/recent_transaction_card.dart';
+import 'package:expense_tracker/shared/models/transaction_model.dart';
 import 'package:flutter/material.dart';
-import 'recent_transaction_card.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RecentTransactionsSection extends StatelessWidget {
-  const RecentTransactionsSection({super.key});
+class RecentTransactionsSection extends ConsumerWidget {
+  final String searchQuery;
+
+  const RecentTransactionsSection({super.key, this.searchQuery = ''});
 
   @override
-  Widget build(BuildContext context) {
-    const transactions = [
-      {
-        'title': 'Starbucks Coffee',
-        'category': 'Food & Drinks',
-        'amount': '-\$12.50',
-        'date': 'Today',
-        'icon': Icons.local_cafe_outlined,
-      },
-      {
-        'title': 'Monthly Salary',
-        'category': 'Income',
-        'amount': '+\$2,800.00',
-        'date': '18 Mar',
-        'icon': Icons.account_balance_wallet_outlined,
-      },
-      {
-        'title': 'Uber Ride',
-        'category': 'Transport',
-        'amount': '-\$18.20',
-        'date': '17 Mar',
-        'icon': Icons.directions_car_outlined,
-      },
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final transactions = ref.watch(transactionProvider).sortedByDateDesc;
+
+    final filtered = searchQuery.trim().isEmpty
+        ? transactions
+        : transactions.where((tx) {
+            final query = searchQuery.trim().toLowerCase();
+            return tx.title.toLowerCase().contains(query) ||
+                tx.note.toLowerCase().contains(query);
+          }).toList();
+
+    final display = filtered.take(8).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Recent Transactions',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-            ),
-            TextButton(onPressed: () {}, child: const Text('See All')),
-          ],
+        Text(
+          'Recent Transactions',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
-        ...transactions.map(
-          (item) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: RecentTransactionCard(
-              title: item['title']! as String,
-              category: item['category']! as String,
-              amount: item['amount']! as String,
-              date: item['date']! as String,
-              icon: item['icon']! as IconData,
+        if (display.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            child: Center(
+              child: Text(
+                searchQuery.trim().isEmpty
+                    ? 'No transactions yet. Tap + to add one.'
+                    : 'No matching transactions.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+            ),
+          )
+        else
+          ...display.map(
+            (TransactionModel item) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: RecentTransactionCard(transaction: item),
             ),
           ),
-        ),
       ],
     );
   }

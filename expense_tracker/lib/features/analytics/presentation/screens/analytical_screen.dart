@@ -1,8 +1,8 @@
+import 'package:expense_tracker/features/analytics/presentation/widgets/analytics_filter_tabs.dart';
+import 'package:expense_tracker/features/analytics/presentation/widgets/analytics_chart_placeholder.dart';
+import 'package:expense_tracker/features/analytics/presentation/widgets/spending_overview_card.dart';
+import 'package:expense_tracker/features/analytics/presentation/widgets/category_spending_section.dart';
 import 'package:flutter/material.dart';
-import '../widgets/analytics_filter_tabs.dart';
-import '../widgets/analytics_chart_placeholder.dart';
-import '../widgets/spending_overview_card.dart';
-import '../widgets/category_spending_section.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});

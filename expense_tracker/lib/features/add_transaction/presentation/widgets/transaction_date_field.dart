@@ -1,13 +1,16 @@
+import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:flutter/material.dart';
 
 class TransactionDateField extends StatelessWidget {
   final String label;
-  final String value;
+  final DateTime value;
+  final VoidCallback onTap;
 
   const TransactionDateField({
     super.key,
     required this.label,
     required this.value,
+    required this.onTap,
   });
 
   @override
@@ -26,7 +29,7 @@ class TransactionDateField extends StatelessWidget {
         const SizedBox(height: 8),
         InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: () {},
+          onTap: onTap,
           child: Ink(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
@@ -41,7 +44,12 @@ class TransactionDateField extends StatelessWidget {
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: Text(value, style: theme.textTheme.bodyLarge)),
+                Expanded(
+                  child: Text(
+                    AppUtils.formatFullDate(value),
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
                 Icon(
                   Icons.keyboard_arrow_down_rounded,
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),

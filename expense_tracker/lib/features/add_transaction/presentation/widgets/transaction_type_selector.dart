@@ -1,7 +1,15 @@
+import 'package:expense_tracker/shared/models/app_enums.dart';
 import 'package:flutter/material.dart';
 
 class TransactionTypeSelector extends StatelessWidget {
-  const TransactionTypeSelector({super.key});
+  final TransactionType selectedType;
+  final ValueChanged<TransactionType> onChanged;
+
+  const TransactionTypeSelector({
+    super.key,
+    required this.selectedType,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +29,22 @@ class TransactionTypeSelector extends StatelessWidget {
         ],
       ),
       child: Row(
-        children: const [
+        children: [
           Expanded(
             child: _TypeOption(
               label: 'Expense',
               icon: Icons.arrow_upward_rounded,
-              isSelected: true,
+              isSelected: selectedType == TransactionType.expense,
+              onTap: () => onChanged(TransactionType.expense),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: _TypeOption(
               label: 'Income',
               icon: Icons.arrow_downward_rounded,
-              isSelected: false,
+              isSelected: selectedType == TransactionType.income,
+              onTap: () => onChanged(TransactionType.income),
             ),
           ),
         ],
@@ -47,45 +57,50 @@ class _TypeOption extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool isSelected;
+  final VoidCallback onTap;
 
   const _TypeOption({
     required this.label,
     required this.icon,
     required this.isSelected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 18,
-            color: isSelected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurface,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 18,
               color: isSelected
                   ? theme.colorScheme.onPrimary
                   : theme.colorScheme.onSurface,
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isSelected
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

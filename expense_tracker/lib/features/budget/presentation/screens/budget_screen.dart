@@ -1,6 +1,6 @@
+import 'package:expense_tracker/features/budget/presentation/widgets/monthly_budget_summary_card.dart';
+import 'package:expense_tracker/features/budget/presentation/widgets/category_budget_section.dart';
 import 'package:flutter/material.dart';
-import '../widgets/monthly_budget_summary_card.dart';
-import '../widgets/category_budget_section.dart';
 
 class BudgetScreen extends StatelessWidget {
   const BudgetScreen({super.key});

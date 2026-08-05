@@ -1,11 +1,25 @@
+import 'package:expense_tracker/core/utils/app_utils.dart';
+import 'package:expense_tracker/features/analytics/state/analytics_provider.dart';
+import 'package:expense_tracker/features/settings/state/settings_provider.dart';
+import 'package:expense_tracker/shared/models/dummy_categories.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SpendingOverviewCard extends StatelessWidget {
+class SpendingOverviewCard extends ConsumerWidget {
   const SpendingOverviewCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final currencyCode = ref.watch(
+      settingsProvider.select((settings) => settings.currencyCode),
+    );
+    final totalExpense = ref.watch(rangeTotalExpenseProvider);
+    final topCategoryId = ref.watch(rangeTopCategoryProvider);
+    final transactionCount = ref.watch(rangeTransactionCountProvider);
+
+    final topCategory =
+        topCategoryId == null ? null : DummyCategories.findById(topCategoryId);
 
     return Container(
       width: double.infinity,
@@ -34,7 +48,7 @@ class SpendingOverviewCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '\$3,180.00',
+            AppUtils.formatCurrency(totalExpense, currencyCode),
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: theme.colorScheme.onPrimaryContainer,
@@ -44,11 +58,17 @@ class SpendingOverviewCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _OverviewItem(label: 'Top Category', value: 'Food'),
+                child: _OverviewItem(
+                  label: 'Top Category',
+                  value: topCategory?.name ?? 'No expense data',
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _OverviewItem(label: 'Transactions', value: '24'),
+                child: _OverviewItem(
+                  label: 'Transactions',
+                  value: '$transactionCount',
+                ),
               ),
             ],
           ),

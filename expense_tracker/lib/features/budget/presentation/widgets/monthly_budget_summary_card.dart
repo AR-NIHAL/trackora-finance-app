@@ -1,18 +1,33 @@
+import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:expense_tracker/features/budget/presentation/widgets/budget_overview_card.dart';
+import 'package:expense_tracker/features/budget/presentation/widgets/budget_progress_bar.dart';
+import 'package:expense_tracker/features/budget/state/budget_provider.dart';
+import 'package:expense_tracker/features/settings/state/settings_provider.dart';
 import 'package:flutter/material.dart';
-import 'budget_progress_bar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MonthlyBudgetSummaryCard extends StatelessWidget {
+class MonthlyBudgetSummaryCard extends ConsumerWidget {
   const MonthlyBudgetSummaryCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final currencyCode = ref.watch(
+      settingsProvider.select((settings) => settings.currencyCode),
+    );
+    final totalBudget = ref.watch(totalMonthlyBudgetLimitProvider);
+    final totalSpent = ref.watch(totalMonthlyBudgetSpentProvider);
+    final remaining = ref.watch(totalMonthlyBudgetRemainingProvider);
 
-    const totalBudget = '\$5,000.00';
-    const totalSpent = '\$3,180.00';
-    const remaining = '\$1,820.00';
-    const progressValue = 0.64;
+    final progress = totalBudget <= 0
+        ? 0.0
+        : (totalSpent / totalBudget).clamp(0.0, 1.0);
+    final isExceeded = totalSpent > totalBudget;
+    final barColor = isExceeded
+        ? Colors.redAccent
+        : progress >= 0.8
+        ? Colors.orange
+        : null;
 
     return Container(
       width: double.infinity,
@@ -41,29 +56,39 @@ class MonthlyBudgetSummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            totalBudget,
+            totalBudget == 0
+                ? 'No budget set'
+                : AppUtils.formatCurrency(totalBudget, currencyCode),
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.w700,
               color: theme.colorScheme.onPrimaryContainer,
             ),
           ),
           const SizedBox(height: 18),
-          const BudgetProgressBar(
-            progress: progressValue,
-            progressLabel: '64% used',
+          BudgetProgressBar(
+            progress: progress,
+            progressLabel: totalBudget == 0
+                ? 'Tap "Add" to set a monthly budget'
+                : isExceeded
+                ? 'Over budget'
+                : '${(progress * 100).toInt()}% used',
+            color: barColor,
           ),
           const SizedBox(height: 18),
-          const Row(
+          Row(
             children: [
               Expanded(
                 child: BudgetOverviewItem(
                   label: 'Total Spent',
-                  value: totalSpent,
+                  value: AppUtils.formatCurrency(totalSpent, currencyCode),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
-                child: BudgetOverviewItem(label: 'Remaining', value: remaining),
+                child: BudgetOverviewItem(
+                  label: 'Remaining',
+                  value: AppUtils.formatCurrency(remaining, currencyCode),
+                ),
               ),
             ],
           ),

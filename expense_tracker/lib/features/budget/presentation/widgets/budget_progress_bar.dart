@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class BudgetProgressBar extends StatelessWidget {
   final double progress;
   final String progressLabel;
+  final Color? color;
 
   const BudgetProgressBar({
     super.key,
     required this.progress,
     required this.progressLabel,
+    this.color,
   });
 
   @override
@@ -21,7 +23,9 @@ class BudgetProgressBar extends StatelessWidget {
         Text(
           progressLabel,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.75),
+            color: color ?? theme.colorScheme.onPrimaryContainer.withValues(
+              alpha: 0.75,
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -30,6 +34,7 @@ class BudgetProgressBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: safeProgress,
             minHeight: 10,
+            color: color,
             backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.55),
           ),
         ),

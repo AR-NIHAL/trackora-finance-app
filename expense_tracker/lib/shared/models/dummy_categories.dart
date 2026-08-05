@@ -104,4 +104,44 @@ class DummyCategories {
     ...expenseCategories,
     ...incomeCategories,
   ];
+
+  static CategoryModel? findById(String id) {
+    for (final category in allCategories) {
+      if (category.id == id) return category;
+    }
+    return null;
+  }
+
+  static IconData iconFor(String? iconName) {
+    switch (iconName) {
+      case 'restaurant':
+        return Icons.restaurant_outlined;
+      case 'directions_car':
+        return Icons.directions_car_outlined;
+      case 'shopping_bag':
+        return Icons.shopping_bag_outlined;
+      case 'receipt_long':
+        return Icons.receipt_long_outlined;
+      case 'favorite':
+        return Icons.favorite_outline;
+      case 'movie':
+        return Icons.movie_outlined;
+      case 'school':
+        return Icons.school_outlined;
+      case 'category':
+        return Icons.category_outlined;
+      case 'payments':
+        return Icons.payments_outlined;
+      case 'laptop_mac':
+        return Icons.laptop_mac_outlined;
+      case 'card_giftcard':
+        return Icons.card_giftcard_outlined;
+      case 'redeem':
+        return Icons.redeem_outlined;
+      case 'account_balance_wallet':
+        return Icons.account_balance_wallet_outlined;
+      default:
+        return Icons.category_outlined;
+    }
+  }
 }
