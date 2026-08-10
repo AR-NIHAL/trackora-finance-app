@@ -161,9 +161,9 @@ features/<feature>/
 ### 5.1 Transactions (core store) — `features/add_transaction/state/`
 
 - `transaction_notifier.dart` → `TransactionNotifier extends Notifier<TransactionState>`
-  - `build()`: loads from storage; **if not seeded yet (`seeded_v1` flag false), writes a
-    set of 7 dummy transactions** (dates relative to `DateTime.now()`, not fixed) and marks
-    seeded. This is why a fresh install shows sample data.
+  - `build()`: loads transactions from storage. **No dummy/seed data** — a fresh install
+    starts with an empty list (Month Income / Month Expense = 0). Any already-saved dummy
+    data from before was invalidated by bumping the storage key to `transactions_v2`.
   - Mutations: `addTransaction`, `updateTransaction`, `deleteTransaction`, `reset`,
     `replaceAll`. **Every mutation persists** via `_persist()`.
 - `transaction_state.dart` → `TransactionState` (immutable `List<TransactionModel>`)
@@ -250,7 +250,7 @@ features/<feature>/
 
   | Key                | Contents                                    |
   | ------------------ | ------------------------------------------- |
-  | `transactions_v1`  | JSON array of `TransactionModel.toJson()`   |
+  | `transactions_v2`  | JSON array of `TransactionModel.toJson()`   |
   | `budgets_v1`       | JSON array of `BudgetModel.toJson()`        |
   | `settings_v1`      | JSON object of `SettingsState.toJson()`     |
   | `goals_v1`         | JSON array of `SavingGoal.toJson()`         |
@@ -390,8 +390,8 @@ flutter test             # 13 tests, all must pass
 - Widget tests **must not** rely on `main()` having run; they pump `ExpenseTrackerApp`
   directly. Providers read `LocalStorageService` which is fine because widget tests run inside
   a `TestWidgetsFlutterBinding` with mocked prefs.
-- The seeded dummy data depends on `DateTime.now()`, so assertions are written against
-  stable text like "Total Balance", not amounts.
+- There is no seeded dummy data anymore; the app starts with an empty transaction list
+  (Month Income / Month Expense = 0).
 
 ---
 
@@ -411,8 +411,7 @@ The project was upgraded in **phases**. Everything below is complete:
 - Settings: dark mode wired to theme, currency, notifications switch, reset dialog.
 
 ### Phase 2 — Persistence
-- `LocalStorageService` (shared_preferences + JSON) for transactions, budgets, settings;
-  `seeded_v1` flag with relative-date dummy seed data.
+- `LocalStorageService` (shared_preferences + JSON) for transactions, budgets, settings.
 - `toJson`/`fromJson` added to `TransactionModel` and `BudgetModel`.
 - Every notifier persists on each change; `main()` awaits `LocalStorageService.init()`.
 - Added `test/storage_test.dart` (4 tests).
@@ -442,6 +441,12 @@ The project was upgraded in **phases**. Everything below is complete:
 - **⚠️ `core/utils/app_utils.dart` was initially misidentified as dead and deleted, then
   restored/reconstructed. It IS used (currency/date formatting everywhere).**
 
+### Later change — removed dummy seed data
+- Removed the 7 dummy seed transactions from `TransactionNotifier.build()` (the app now
+  starts empty, so Month Income / Month Expense are 0).
+- Bumped the transactions storage key `transactions_v1` → `transactions_v2` so any
+  previously-saved dummy data is ignored/cleared on existing installs.
+
 ### Current verification status
 - `flutter analyze`: **No issues found** (6s).
 - `flutter test`: **13/13 pass**.
@@ -461,8 +466,9 @@ The project was upgraded in **phases**. Everything below is complete:
 4. **No comments policy:** do not add code comments unless asked; keep code self-documenting.
 5. **Never touch sibling projects** (`fintrack/`, `trackkora/`).
 6. **`flutter pub get` after pubspec changes.**
-7. **Seeding:** fresh installs get dummy transactions. To see "empty" behaviour in tests or
-   dev, the seed flag logic in `TransactionNotifier.build()` is the single place to change.
+7. **No dummy seed data:** fresh installs start with an empty transaction list (Month
+   Income / Month Expense = 0). The old dummy-seed logic was removed from
+   `TransactionNotifier.build()`.
 8. **Windows shell:** when running commands, use PowerShell (no `&&` chaining; use
    `;` or `if ($?)`).
 9. **Git commit style:** lowercase conventional commits, e.g. `feat: add the budget section`.

@@ -11,7 +11,7 @@ class LocalStorageService {
   static final LocalStorageService instance = LocalStorageService._();
   static SharedPreferences? _prefs;
 
-  static const _transactionsKey = 'transactions_v1';
+  static const _transactionsKey = 'transactions_v2';
   static const _budgetsKey = 'budgets_v1';
   static const _settingsKey = 'settings_v1';
   static const _goalsKey = 'goals_v1';
