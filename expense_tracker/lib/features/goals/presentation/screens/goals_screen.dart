@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:expense_tracker/features/goals/presentation/widgets/contribute_dialog.dart';
 import 'package:expense_tracker/features/goals/presentation/widgets/goal_form_dialog.dart';
@@ -151,7 +152,7 @@ class GoalsScreen extends ConsumerWidget {
                                   value: goal.progress,
                                   strokeWidth: 6,
                                   color: goal.isCompleted
-                                      ? Colors.green
+                                      ? AppColors.income(context)
                                       : theme.colorScheme.primary,
                                   backgroundColor: theme.colorScheme.surfaceContainerHighest,
                                 ),

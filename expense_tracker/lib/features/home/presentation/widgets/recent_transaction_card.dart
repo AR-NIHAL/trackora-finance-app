@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:expense_tracker/features/settings/state/settings_provider.dart';
 import 'package:expense_tracker/shared/models/dummy_categories.dart';
@@ -65,7 +66,7 @@ class RecentTransactionCard extends ConsumerWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                    color: AppColors.textMuted(context),
                   ),
                 ),
               ],
@@ -76,7 +77,9 @@ class RecentTransactionCard extends ConsumerWidget {
             '${isExpense ? '-' : '+'}${AppUtils.formatCurrency(transaction.amount, currencyCode)}',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: isExpense ? Colors.redAccent : Colors.green,
+              color: isExpense
+                  ? AppColors.expense(context)
+                  : AppColors.income(context),
             ),
           ),
         ],

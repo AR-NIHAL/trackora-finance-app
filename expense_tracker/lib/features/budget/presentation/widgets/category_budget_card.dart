@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:expense_tracker/features/budget/presentation/widgets/budget_progress_bar.dart';
 import 'package:expense_tracker/features/settings/state/settings_provider.dart';
@@ -35,7 +36,7 @@ class CategoryBudgetCard extends ConsumerWidget {
     final isWarning = !isExceeded && progress >= 0.8;
 
     final barColor = isExceeded
-        ? Colors.redAccent
+        ? AppColors.expense(context)
         : isWarning
         ? Colors.orange
         : theme.colorScheme.primary;
