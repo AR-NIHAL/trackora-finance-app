@@ -3,15 +3,27 @@ import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: AppColors.primaryLight,
+      brightness: Brightness.light,
+      primary: AppColors.primaryLight,
+      onPrimary: Colors.white,
+      surface: AppColors.cardLight,
+      onSurface: AppColors.textPrimaryLight,
+      onSurfaceVariant: AppColors.textMutedLight,
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       scaffoldBackgroundColor: AppColors.scaffoldLight,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        brightness: Brightness.light,
+      colorScheme: colorScheme,
+      appBarTheme: const AppBarTheme(
+        centerTitle: false,
+        elevation: 0,
+        backgroundColor: AppColors.scaffoldLight,
+        foregroundColor: AppColors.textPrimaryLight,
       ),
-      appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0),
       cardTheme: CardThemeData(
         color: AppColors.cardLight,
         elevation: 0,
@@ -21,15 +33,27 @@ class AppTheme {
   }
 
   static ThemeData get darkTheme {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: AppColors.primaryDark,
+      brightness: Brightness.dark,
+      primary: AppColors.primaryDark,
+      onPrimary: const Color(0xFF111418),
+      surface: AppColors.cardDark,
+      onSurface: AppColors.textPrimaryDark,
+      onSurfaceVariant: AppColors.textMutedDark,
+    );
+
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.scaffoldDark,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        brightness: Brightness.dark,
+      colorScheme: colorScheme,
+      appBarTheme: const AppBarTheme(
+        centerTitle: false,
+        elevation: 0,
+        backgroundColor: AppColors.scaffoldDark,
+        foregroundColor: AppColors.textPrimaryDark,
       ),
-      appBarTheme: const AppBarTheme(centerTitle: false, elevation: 0),
       cardTheme: CardThemeData(
         color: AppColors.cardDark,
         elevation: 0,

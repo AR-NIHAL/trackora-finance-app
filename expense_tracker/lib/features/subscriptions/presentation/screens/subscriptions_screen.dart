@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:expense_tracker/features/settings/state/settings_provider.dart';
 import 'package:expense_tracker/features/subscriptions/state/subscriptions_provider.dart';
@@ -133,9 +134,7 @@ class SubscriptionsScreen extends ConsumerWidget {
                           Text(
                             'Next: ${AppUtils.formatFullDate(sub.nextOccurrence)}',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(
-                                alpha: 0.65,
-                              ),
+                              color: AppColors.textMuted(context),
                             ),
                           ),
                         ],
@@ -146,7 +145,7 @@ class SubscriptionsScreen extends ConsumerWidget {
                       AppUtils.formatCurrency(sub.amount, currencyCode),
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Colors.redAccent,
+                        color: AppColors.expense(context),
                       ),
                     ),
                   ],

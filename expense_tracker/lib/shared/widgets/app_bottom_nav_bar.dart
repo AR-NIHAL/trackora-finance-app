@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../app/router/app_tab_item.dart';
+import '../../app/theme/app_colors.dart';
 
 class AppBottomNavBar extends StatelessWidget {
   final AppTabItem currentTab;
@@ -22,7 +23,7 @@ class AppBottomNavBar extends StatelessWidget {
     final isSelected = currentTab == tab;
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
-    final unselectedColor = theme.colorScheme.onSurface.withValues(alpha: 0.55);
+    final unselectedColor = theme.colorScheme.onSurfaceVariant;
 
     return Expanded(
       child: Material(
@@ -127,7 +128,7 @@ class AppBottomNavBar extends StatelessWidget {
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     color: isSelected
                         ? primaryColor
-                        : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                        : theme.colorScheme.onSurfaceVariant,
                     letterSpacing: -0.2,
                   ),
                 ),
@@ -159,8 +160,8 @@ class AppBottomNavBar extends StatelessWidget {
             height: 66,
             decoration: BoxDecoration(
               color: isDark
-                  ? const Color(0xFF1E293B).withValues(alpha: 0.75)
-                  : Colors.white.withValues(alpha: 0.8),
+                  ? AppColors.cardDark.withValues(alpha: 0.75)
+                  : AppColors.cardLight.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
                 color: isDark

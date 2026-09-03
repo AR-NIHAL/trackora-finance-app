@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum AnalyticsRange { week, month, year }
 
+enum AnalyticsChartType { bar, line, donut }
+
 class SpendingPoint {
   final String label;
   final double value;
@@ -20,6 +22,18 @@ class AnalyticsRangeNotifier extends Notifier<AnalyticsRange> {
   AnalyticsRange build() => AnalyticsRange.month;
 
   void setRange(AnalyticsRange range) => state = range;
+}
+
+final analyticsChartTypeProvider =
+    NotifierProvider<AnalyticsChartTypeNotifier, AnalyticsChartType>(
+      AnalyticsChartTypeNotifier.new,
+    );
+
+class AnalyticsChartTypeNotifier extends Notifier<AnalyticsChartType> {
+  @override
+  AnalyticsChartType build() => AnalyticsChartType.bar;
+
+  void setType(AnalyticsChartType type) => state = type;
 }
 
 final filteredExpenseTransactionsProvider =
@@ -64,6 +78,94 @@ final rangeCategoryTotalsProvider = Provider<Map<String, double>>((ref) {
 final rangeTopCategoryProvider = Provider<String?>((ref) {
   final totals = ref.watch(rangeCategoryTotalsProvider);
   return totals.isEmpty ? null : totals.keys.first;
+});
+
+final filteredIncomeTransactionsProvider =
+    Provider<List<TransactionModel>>((ref) {
+      final transactions = ref.watch(transactionProvider).transactions;
+      final range = ref.watch(analyticsRangeProvider);
+      final now = DateTime.now();
+
+      return transactions.where((tx) {
+        if (!tx.isIncome) return false;
+        return switch (range) {
+          AnalyticsRange.week => !tx.date.isBefore(
+            now.subtract(const Duration(days: 7)),
+          ),
+          AnalyticsRange.month =>
+            tx.date.year == now.year && tx.date.month == now.month,
+          AnalyticsRange.year => tx.date.year == now.year,
+        };
+      }).toList();
+    });
+
+final rangeTotalIncomeProvider = Provider<double>((ref) {
+  final transactions = ref.watch(filteredIncomeTransactionsProvider);
+  return transactions.fold(0.0, (sum, tx) => sum + tx.amount);
+});
+
+final rangeNetSavingsProvider = Provider<double>((ref) {
+  final income = ref.watch(rangeTotalIncomeProvider);
+  final expense = ref.watch(rangeTotalExpenseProvider);
+  return income - expense;
+});
+
+final rangeSavingsRateProvider = Provider<double>((ref) {
+  final income = ref.watch(rangeTotalIncomeProvider);
+  final expense = ref.watch(rangeTotalExpenseProvider);
+  if (income <= 0) return 0.0;
+  return (((income - expense) / income) * 100).clamp(-100.0, 100.0);
+});
+
+final rangeDailyAverageProvider = Provider<double>((ref) {
+  final totalExpense = ref.watch(rangeTotalExpenseProvider);
+  final range = ref.watch(analyticsRangeProvider);
+  final now = DateTime.now();
+
+  final days = switch (range) {
+    AnalyticsRange.week => 7,
+    AnalyticsRange.month => now.day > 0 ? now.day : 1,
+    AnalyticsRange.year =>
+      DateTime(now.year, now.month, now.day)
+          .difference(DateTime(now.year, 1, 1))
+          .inDays + 1,
+  };
+
+  return days > 0 ? totalExpense / days : 0.0;
+});
+
+final rangePreviousPeriodExpenseProvider = Provider<double>((ref) {
+  final transactions = ref.watch(transactionProvider).transactions;
+  final range = ref.watch(analyticsRangeProvider);
+  final now = DateTime.now();
+
+  return transactions.where((tx) {
+    if (!tx.isExpense) return false;
+    return switch (range) {
+      AnalyticsRange.week =>
+        tx.date.isBefore(now.subtract(const Duration(days: 7))) &&
+        !tx.date.isBefore(now.subtract(const Duration(days: 14))),
+      AnalyticsRange.month => () {
+        final prevMonth = DateTime(now.year, now.month - 1);
+        return tx.date.year == prevMonth.year && tx.date.month == prevMonth.month;
+      }(),
+      AnalyticsRange.year => tx.date.year == (now.year - 1),
+    };
+  }).fold(0.0, (sum, tx) => sum + tx.amount);
+});
+
+final rangeExpenseDeltaPercentProvider = Provider<double?>((ref) {
+  final current = ref.watch(rangeTotalExpenseProvider);
+  final previous = ref.watch(rangePreviousPeriodExpenseProvider);
+  if (previous <= 0) return null;
+  return ((current - previous) / previous) * 100;
+});
+
+final rangePeakSpendingProvider = Provider<SpendingPoint?>((ref) {
+  final points = ref.watch(spendingTrendProvider);
+  final nonZero = points.where((p) => p.value > 0).toList();
+  if (nonZero.isEmpty) return null;
+  return nonZero.reduce((a, b) => a.value > b.value ? a : b);
 });
 
 final spendingTrendProvider = Provider<List<SpendingPoint>>((ref) {

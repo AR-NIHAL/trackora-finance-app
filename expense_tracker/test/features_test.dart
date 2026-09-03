@@ -1,6 +1,7 @@
 import 'package:expense_tracker/core/services/export_service.dart';
 import 'package:expense_tracker/core/services/local_storage_service.dart';
 import 'package:expense_tracker/features/add_transaction/state/transaction_provider.dart';
+import 'package:expense_tracker/features/analytics/state/analytics_provider.dart';
 import 'package:expense_tracker/features/goals/state/goal_provider.dart';
 import 'package:expense_tracker/features/subscriptions/state/subscriptions_provider.dart';
 import 'package:expense_tracker/shared/models/app_enums.dart';
@@ -89,5 +90,32 @@ void main() {
     final food = DummyCategories.findById('exp_food');
     expect(food?.name, 'Food');
     expect(DummyCategories.findById('nope'), isNull);
+  });
+
+  test('analytics chart type and cash flow providers calculate properly', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    expect(container.read(analyticsChartTypeProvider), AnalyticsChartType.bar);
+    container.read(analyticsChartTypeProvider.notifier).setType(AnalyticsChartType.line);
+    expect(container.read(analyticsChartTypeProvider), AnalyticsChartType.line);
+
+    final now = DateTime.now();
+    container.read(transactionProvider.notifier).replaceAll([
+      TransactionModel(
+        id: 'inc1',
+        title: 'Salary',
+        amount: 2000,
+        type: TransactionType.income,
+        categoryId: 'inc_salary',
+        date: now,
+      ),
+      _expense('exp1', 'Groceries', 500, now),
+    ]);
+
+    expect(container.read(rangeTotalIncomeProvider), 2000);
+    expect(container.read(rangeTotalExpenseProvider), 500);
+    expect(container.read(rangeNetSavingsProvider), 1500);
+    expect(container.read(rangeSavingsRateProvider), 75.0);
   });
 }

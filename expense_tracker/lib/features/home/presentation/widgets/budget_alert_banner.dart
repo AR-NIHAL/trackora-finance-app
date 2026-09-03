@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/features/add_transaction/state/transaction_provider.dart';
 import 'package:expense_tracker/features/budget/state/budget_provider.dart';
 import 'package:expense_tracker/shared/models/dummy_categories.dart';
@@ -34,17 +35,18 @@ class BudgetAlertBanner extends ConsumerWidget {
 
     final category = DummyCategories.findById(firstAlert.categoryId);
     final isExceeded = firstAlert.isExceeded;
+    final alertColor = isExceeded ? AppColors.expense(context) : Colors.orange;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        color: (isExceeded ? Colors.redAccent : Colors.orange).withValues(
+        color: alertColor.withValues(
           alpha: 0.12,
         ),
         border: Border.all(
-          color: (isExceeded ? Colors.redAccent : Colors.orange).withValues(
+          color: alertColor.withValues(
             alpha: 0.4,
           ),
         ),
@@ -55,7 +57,7 @@ class BudgetAlertBanner extends ConsumerWidget {
             isExceeded
                 ? Icons.error_outline_rounded
                 : Icons.warning_amber_rounded,
-            color: isExceeded ? Colors.redAccent : Colors.orange,
+            color: alertColor,
           ),
           const SizedBox(width: 10),
           Expanded(

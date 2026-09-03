@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/features/add_transaction/state/transaction_provider.dart';
 import 'package:expense_tracker/shared/models/dummy_categories.dart';
 import 'package:expense_tracker/shared/models/transaction_model.dart';
@@ -52,7 +53,7 @@ final insightsProvider = Provider<List<Insight>>((ref) {
         icon: percent >= 0
             ? Icons.trending_up_rounded
             : Icons.trending_down_rounded,
-        color: percent >= 0 ? Colors.orange : Colors.green,
+        color: percent >= 0 ? Colors.orange : AppColors.incomeLight,
         title: 'vs last month',
         message: percent >= 0
             ? 'You spent $percent% more than last month.'

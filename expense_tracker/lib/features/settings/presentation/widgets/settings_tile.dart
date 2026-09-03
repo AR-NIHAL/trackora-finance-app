@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SettingsTile extends StatelessWidget {
@@ -20,7 +21,7 @@ class SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final titleColor = isDestructive
-        ? Colors.redAccent
+        ? AppColors.expense(context)
         : theme.colorScheme.onSurface;
 
     return ListTile(
@@ -35,7 +36,7 @@ class SettingsTile extends StatelessWidget {
         child: Icon(
           icon,
           color: isDestructive
-              ? Colors.redAccent
+              ? AppColors.expense(context)
               : theme.colorScheme.onSecondaryContainer,
         ),
       ),
@@ -49,12 +50,12 @@ class SettingsTile extends StatelessWidget {
       subtitle: Text(
         subtitle,
         style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+          color: AppColors.textMuted(context),
         ),
       ),
       trailing: Icon(
         Icons.chevron_right_rounded,
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
+        color: AppColors.textMuted(context).withValues(alpha: 0.7),
       ),
       onTap: onTap,
     );
