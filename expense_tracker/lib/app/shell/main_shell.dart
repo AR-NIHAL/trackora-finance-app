@@ -42,7 +42,11 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: _buildCurrentScreen()),
+      extendBody: true,
+      body: SafeArea(
+        bottom: false,
+        child: _buildCurrentScreen(),
+      ),
       bottomNavigationBar: AppBottomNavBar(
         currentTab: _currentTab,
         onTabSelected: _onTabSelected,

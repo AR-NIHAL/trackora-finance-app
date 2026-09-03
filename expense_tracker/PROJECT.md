@@ -63,8 +63,9 @@ state lives in Riverpod providers.
 
 There is **no named route table**. Navigation is:
 
-1. A bottom `NavigationBar` (`AppBottomNavBar`) switches between 5 root tabs via
-   `MainShell` → `_buildCurrentScreen()`. Tab enum: `AppTabItem` (`app/router/app_tab_item.dart`).
+1. A floating glassmorphism bottom navigation bar (`AppBottomNavBar`) with backdrop blur
+   and active pill animations switches between 5 root tabs via `MainShell` → `_buildCurrentScreen()`.
+   Tab enum: `AppTabItem` (`app/router/app_tab_item.dart`).
 2. Feature screens opened from Home quick actions (Insights / Subscriptions / Goals /
    Forecast) use `Navigator.push(MaterialPageRoute(...))`.
 3. `Settings` → Export/Backup/Restore and Reset are handled inline.
