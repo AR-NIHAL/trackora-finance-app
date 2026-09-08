@@ -16,8 +16,8 @@ and what conventions must be followed.
   - Sibling folders `fintrack/` and `trackkora/` are **separate projects — never touch them**.
 - **Purpose:** Track income and expenses, set monthly category budgets, analyse spending,
   detect recurring subscriptions, set saving goals, and forecast cash flow.
-- **Current status:** Feature-complete across four planned phases. `flutter analyze` is clean,
-  all **13 tests pass** (see [Testing](#9-testing)).
+- **Current status:** Feature-complete across four planned phases + Clean Architecture repository refactor. `flutter analyze` is clean (0 issues),
+  all **23 tests pass** (see [Testing](#9-testing)).
 
 ### Environment
 
@@ -376,15 +376,16 @@ features/<feature>/
 Run checks:
 
 ```
-flutter analyze          # must be clean
-flutter test             # 13 tests, all must pass
+flutter analyze          # must be clean (0 issues)
+flutter test             # 23 tests, all must pass
 ```
 
-| File                  | Count | Coverage                                                            |
-| --------------------- | ----- | ------------------------------------------------------------------- |
-| `test/storage_test.dart` | 4   | JSON round-trips (transaction, budget), persist/read, seed flag. Uses `SharedPreferences.setMockInitialValues({})` + `await LocalStorageService.init()` in `setUp`. |
-| `test/features_test.dart` | 5  | CSV export header/rows, backup JSON round-trip, subscription detection (`ProviderContainer`), goals add/contribute, category lookup. |
-| `test/widget_test.dart`  | 4   | Render home with balance, tab navigation, form validation, add→home reflects. Pumps `ProviderScope(child: ExpenseTrackerApp())`. |
+| File                                       | Count | Coverage                                                            |
+| ------------------------------------------ | ----- | ------------------------------------------------------------------- |
+| `test/clean_architecture_repositories_test.dart` | 9   | Repository pattern contracts, dependency injection into Notifiers, and storage error resilience. |
+| `test/storage_test.dart`                   | 4     | JSON round-trips (transaction, budget), persist/read, seed flag. Uses `SharedPreferences.setMockInitialValues({})` + `await LocalStorageService.init()` in `setUp`. |
+| `test/features_test.dart`                  | 6     | CSV export header/rows, backup JSON round-trip, subscription detection (`ProviderContainer`), goals add/contribute, category lookup, analytics chart providers. |
+| `test/widget_test.dart`                    | 4     | Render home with balance, tab navigation, form validation, add→home reflects. Pumps `ProviderScope(child: ExpenseTrackerApp())`. |
 
 **Test gotchas:**
 

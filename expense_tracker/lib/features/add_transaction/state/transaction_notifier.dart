@@ -1,18 +1,20 @@
-import 'package:expense_tracker/core/services/local_storage_service.dart';
+import 'package:expense_tracker/features/add_transaction/data/repositories/local_transaction_repository.dart';
+import 'package:expense_tracker/features/add_transaction/domain/repositories/transaction_repository.dart';
 import 'package:expense_tracker/shared/models/transaction_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'transaction_state.dart';
 
 class TransactionNotifier extends Notifier<TransactionState> {
+  TransactionRepository get _repository => ref.read(transactionRepositoryProvider);
+
   @override
   TransactionState build() {
-    final storage = LocalStorageService.instance;
-    final stored = storage.getTransactions();
+    final stored = _repository.fetchTransactions();
     return TransactionState(transactions: stored);
   }
 
   void _persist() {
-    LocalStorageService.instance.saveTransactions(state.transactions);
+    _repository.saveTransactions(state.transactions);
   }
 
   void addTransaction(TransactionModel transaction) {

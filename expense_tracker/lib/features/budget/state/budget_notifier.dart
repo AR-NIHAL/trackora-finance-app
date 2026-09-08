@@ -1,17 +1,20 @@
-import 'package:expense_tracker/core/services/local_storage_service.dart';
+import 'package:expense_tracker/features/budget/data/repositories/local_budget_repository.dart';
+import 'package:expense_tracker/features/budget/domain/repositories/budget_repository.dart';
 import 'package:expense_tracker/shared/models/budget_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'budget_state.dart';
 
 class BudgetNotifier extends Notifier<BudgetState> {
+  BudgetRepository get _repository => ref.read(budgetRepositoryProvider);
+
   @override
   BudgetState build() {
-    final stored = LocalStorageService.instance.getBudgets();
+    final stored = _repository.fetchBudgets();
     return BudgetState(budgets: stored);
   }
 
   void _persist() {
-    LocalStorageService.instance.saveBudgets(state.budgets);
+    _repository.saveBudgets(state.budgets);
   }
 
   void setBudget(BudgetModel budget) {

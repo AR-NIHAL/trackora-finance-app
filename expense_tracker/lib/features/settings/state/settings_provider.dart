@@ -1,4 +1,5 @@
-import 'package:expense_tracker/core/services/local_storage_service.dart';
+import 'package:expense_tracker/features/settings/data/repositories/local_settings_repository.dart';
+import 'package:expense_tracker/features/settings/domain/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,15 +44,17 @@ class SettingsState {
 }
 
 class SettingsNotifier extends Notifier<SettingsState> {
+  SettingsRepository get _repository => ref.read(settingsRepositoryProvider);
+
   @override
   SettingsState build() {
-    final stored = LocalStorageService.instance.getSettings();
+    final stored = _repository.fetchSettings();
     if (stored.isEmpty) return const SettingsState();
     return SettingsState.fromJson(stored);
   }
 
   void _persist() {
-    LocalStorageService.instance.saveSettings(state.toJson());
+    _repository.saveSettings(state.toJson());
   }
 
   void toggleDarkMode(bool value) {

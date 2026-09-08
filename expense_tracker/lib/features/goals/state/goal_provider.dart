@@ -1,17 +1,20 @@
-import 'package:expense_tracker/core/services/local_storage_service.dart';
+import 'package:expense_tracker/features/goals/data/repositories/local_goal_repository.dart';
+import 'package:expense_tracker/features/goals/domain/repositories/goal_repository.dart';
 import 'package:expense_tracker/shared/models/saving_goal_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'goal_state.dart';
 
 class GoalNotifier extends Notifier<GoalState> {
+  GoalRepository get _repository => ref.read(goalRepositoryProvider);
+
   @override
   GoalState build() {
-    final stored = LocalStorageService.instance.getGoals();
+    final stored = _repository.fetchGoals();
     return GoalState(goals: stored);
   }
 
   void _persist() {
-    LocalStorageService.instance.saveGoals(state.goals);
+    _repository.saveGoals(state.goals);
   }
 
   void addGoal(SavingGoal goal) {

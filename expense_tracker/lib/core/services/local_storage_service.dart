@@ -3,7 +3,13 @@ import 'dart:convert';
 import 'package:expense_tracker/shared/models/budget_model.dart';
 import 'package:expense_tracker/shared/models/saving_goal_model.dart';
 import 'package:expense_tracker/shared/models/transaction_model.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+final localStorageServiceProvider = Provider<LocalStorageService>((ref) {
+  return LocalStorageService.instance;
+});
 
 class LocalStorageService {
   LocalStorageService._();
@@ -30,10 +36,15 @@ class LocalStorageService {
   List<TransactionModel> getTransactions() {
     final raw = _prefs?.getString(_transactionsKey);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((item) => TransactionModel.fromJson(item as Map<String, dynamic>))
-        .toList();
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((item) => TransactionModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (e, st) {
+      debugPrint('Error decoding transactions from storage: $e\n$st');
+      return [];
+    }
   }
 
   Future<void> saveTransactions(List<TransactionModel> transactions) async {
@@ -46,10 +57,15 @@ class LocalStorageService {
   List<BudgetModel> getBudgets() {
     final raw = _prefs?.getString(_budgetsKey);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((item) => BudgetModel.fromJson(item as Map<String, dynamic>))
-        .toList();
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((item) => BudgetModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (e, st) {
+      debugPrint('Error decoding budgets from storage: $e\n$st');
+      return [];
+    }
   }
 
   Future<void> saveBudgets(List<BudgetModel> budgets) async {
@@ -60,7 +76,12 @@ class LocalStorageService {
   Map<String, dynamic> getSettings() {
     final raw = _prefs?.getString(_settingsKey);
     if (raw == null) return {};
-    return jsonDecode(raw) as Map<String, dynamic>;
+    try {
+      return jsonDecode(raw) as Map<String, dynamic>;
+    } catch (e, st) {
+      debugPrint('Error decoding settings from storage: $e\n$st');
+      return {};
+    }
   }
 
   Future<void> saveSettings(Map<String, dynamic> settings) async {
@@ -70,10 +91,15 @@ class LocalStorageService {
   List<SavingGoal> getGoals() {
     final raw = _prefs?.getString(_goalsKey);
     if (raw == null) return [];
-    final list = jsonDecode(raw) as List<dynamic>;
-    return list
-        .map((item) => SavingGoal.fromJson(item as Map<String, dynamic>))
-        .toList();
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((item) => SavingGoal.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (e, st) {
+      debugPrint('Error decoding goals from storage: $e\n$st');
+      return [];
+    }
   }
 
   Future<void> saveGoals(List<SavingGoal> goals) async {
@@ -83,3 +109,4 @@ class LocalStorageService {
     );
   }
 }
+
