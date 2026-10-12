@@ -31,7 +31,9 @@ class AmountOverviewChip extends StatelessWidget {
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.08)
-              : Colors.white.withValues(alpha: 0.6),
+              : (accentColor != null
+                  ? accentColor!.withValues(alpha: 0.18)
+                  : const Color(0xFFE2E8E4)),
           width: 1,
         ),
       ),
@@ -54,20 +56,29 @@ class AmountOverviewChip extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            title,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              title,
+              maxLines: 1,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            amount,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: accentColor ?? theme.colorScheme.onSurface,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              amount,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: accentColor ?? theme.colorScheme.onSurface,
+              ),
             ),
           ),
         ],

@@ -117,5 +117,28 @@ void main() {
     expect(container.read(rangeTotalExpenseProvider), 500);
     expect(container.read(rangeNetSavingsProvider), 1500);
     expect(container.read(rangeSavingsRateProvider), 75.0);
+
+    // Monthly week trend points
+    final w1Date = DateTime(now.year, now.month, 3);
+    final w2Date = DateTime(now.year, now.month, 10);
+    container.read(transactionProvider.notifier).replaceAll([
+      _expense('w1_tx', 'Coffee', 50, w1Date),
+      _expense('w2_tx', 'Dinner', 120, w2Date),
+    ]);
+
+    final trendPoints = container.read(spendingTrendProvider);
+    expect(trendPoints.length, 4);
+    expect(trendPoints[0].label, 'W1');
+    expect(trendPoints[0].value, 50);
+    expect(trendPoints[1].label, 'W2');
+    expect(trendPoints[1].value, 120);
+    expect(trendPoints[2].label, 'W3');
+    expect(trendPoints[2].value, 0);
+    expect(trendPoints[3].label, 'W4');
+    expect(trendPoints[3].value, 0);
+
+    final peak = container.read(rangePeakSpendingProvider);
+    expect(peak?.label, 'W2');
+    expect(peak?.value, 120);
   });
 }

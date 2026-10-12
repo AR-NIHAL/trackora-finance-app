@@ -29,6 +29,21 @@ class AnalyticsKpiCard extends ConsumerWidget {
       AnalyticsRange.year => 'vs last year',
     };
 
+    final peakLabel = switch (range) {
+      AnalyticsRange.week => 'Peak Day',
+      AnalyticsRange.month => 'Peak Week',
+      AnalyticsRange.year => 'Peak Month',
+    };
+
+    final peakValue = switch (range) {
+      AnalyticsRange.month => peak != null
+          ? (peak.label.startsWith('W')
+              ? 'Week ${peak.label.substring(1)}'
+              : peak.label)
+          : 'None',
+      _ => peak != null ? peak.label : 'None',
+    };
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(28),
       child: BackdropFilter(
@@ -39,20 +54,26 @@ class AnalyticsKpiCard extends ConsumerWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
             color: isDark
-                ? AppColors.cardDark.withValues(alpha: 0.75)
-                : AppColors.cardLight.withValues(alpha: 0.8),
+                ? AppColors.cardDark.withValues(alpha: 0.85)
+                : AppColors.cardLight,
             border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.12)
-                  : Colors.white.withValues(alpha: 0.6),
+              color: AppColors.cardBorder(context),
               width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: (isDark ? Colors.black : const Color(0xFF64748B))
-                    .withValues(alpha: isDark ? 0.3 : 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : const Color(0xFF1E293B).withValues(alpha: 0.06),
+                blurRadius: 18,
+                offset: const Offset(0, 6),
+              ),
+              BoxShadow(
+                color: isDark
+                    ? Colors.transparent
+                    : const Color(0xFF1E293B).withValues(alpha: 0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
               ),
             ],
           ),
@@ -132,8 +153,8 @@ class AnalyticsKpiCard extends ConsumerWidget {
                   Expanded(
                     child: _KpiChip(
                       icon: Icons.trending_up_rounded,
-                      label: 'Peak Day',
-                      value: peak != null ? peak.label : 'None',
+                      label: peakLabel,
+                      value: peakValue,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -204,13 +225,17 @@ class _KpiChip extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary(context),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary(context),
+              ),
             ),
           ),
         ],

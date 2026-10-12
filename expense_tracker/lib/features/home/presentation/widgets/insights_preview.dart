@@ -47,6 +47,10 @@ class InsightsPreview extends ConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
               color: insight.color.withValues(alpha: 0.10),
+              border: Border.all(
+                color: insight.color.withValues(alpha: 0.25),
+                width: 1,
+              ),
             ),
             child: Row(
               children: [

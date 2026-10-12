@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:expense_tracker/shared/models/dummy_categories.dart';
 import 'package:flutter/material.dart';
@@ -27,11 +28,15 @@ class CategorySpendingCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
         color: theme.colorScheme.surface,
+        border: Border.all(
+          color: AppColors.cardBorder(context),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.04),
             blurRadius: 14,
-            offset: const Offset(0, 6),
+            offset: const Offset(0, 4),
           ),
         ],
       ),

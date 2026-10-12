@@ -58,8 +58,11 @@ class AnalyticsBarChart extends StatelessWidget {
               fitInsideVertically: true,
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 final point = points[group.x];
+                final label = point.label.startsWith('W') && point.label.length == 2
+                    ? 'Week ${point.label.substring(1)}'
+                    : point.label;
                 return BarTooltipItem(
-                  '${point.label}\n${AppUtils.formatCurrency(point.value, currencyCode)}',
+                  '$label\n${AppUtils.formatCurrency(point.value, currencyCode)}',
                   const TextStyle(
                     color: Colors.white,
                     fontSize: 12,

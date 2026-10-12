@@ -7,12 +7,16 @@ class AppColors {
   static const Color primary = primaryLight;
 
   // Background (Scaffold)
-  static const Color scaffoldLight = Color(0xFFF8F9FA);
+  static const Color scaffoldLight = Color(0xFFF2F5F3);
   static const Color scaffoldDark = Color(0xFF111418);
 
   // Surface / Cards
   static const Color cardLight = Color(0xFFFFFFFF);
   static const Color cardDark = Color(0xFF1A2027);
+
+  // Card Borders
+  static const Color cardBorderLight = Color(0xFFE2E8E4);
+  static const Color cardBorderDark = Color(0x1FFFFFFF);
 
   // Primary Text
   static const Color textPrimaryLight = Color(0xFF1A1F1D);
@@ -31,6 +35,11 @@ class AppColors {
   static const Color expenseDark = Color(0xFFE57373);
 
   // Dynamic context helpers
+  static Color cardBorder(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? cardBorderDark
+          : cardBorderLight;
+
   static Color primaryColor(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
           ? primaryDark

@@ -37,9 +37,12 @@ class AnalyticsLineChart extends StatelessWidget {
               getTooltipItems: (touchedSpots) {
                 return touchedSpots.map((spot) {
                   final index = spot.x.toInt();
-                  final label = (index >= 0 && index < points.length)
+                  final rawLabel = (index >= 0 && index < points.length)
                       ? points[index].label
                       : '';
+                  final label = rawLabel.startsWith('W') && rawLabel.length == 2
+                      ? 'Week ${rawLabel.substring(1)}'
+                      : rawLabel;
                   return LineTooltipItem(
                     '$label\n${AppUtils.formatCurrency(spot.y, currencyCode)}',
                     const TextStyle(

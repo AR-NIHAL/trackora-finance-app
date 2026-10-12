@@ -28,11 +28,15 @@ class RecentTransactionCard extends ConsumerWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
         color: theme.colorScheme.surface,
+        border: Border.all(
+          color: AppColors.cardBorder(context),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.04),
             blurRadius: 14,
-            offset: const Offset(0, 6),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -72,14 +76,19 @@ class RecentTransactionCard extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(width: 12),
-          Text(
-            '${isExpense ? '-' : '+'}${AppUtils.formatCurrency(transaction.amount, currencyCode)}',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: isExpense
-                  ? AppColors.expense(context)
-                  : AppColors.income(context),
+          const SizedBox(width: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerRight,
+            child: Text(
+              '${isExpense ? '-' : '+'}${AppUtils.formatCurrency(transaction.amount, currencyCode)}',
+              maxLines: 1,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: isExpense
+                    ? AppColors.expense(context)
+                    : AppColors.income(context),
+              ),
             ),
           ),
         ],

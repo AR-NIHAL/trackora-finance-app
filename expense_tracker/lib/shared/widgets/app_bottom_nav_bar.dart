@@ -57,13 +57,17 @@ class AppBottomNavBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? primaryColor : unselectedColor,
-                    letterSpacing: -0.2,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected ? primaryColor : unselectedColor,
+                      letterSpacing: -0.2,
+                    ),
                   ),
                 ),
               ],
@@ -121,15 +125,19 @@ class AppBottomNavBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  'Add',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected
-                        ? primaryColor
-                        : theme.colorScheme.onSurfaceVariant,
-                    letterSpacing: -0.2,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Add',
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected
+                          ? primaryColor
+                          : theme.colorScheme.onSurfaceVariant,
+                      letterSpacing: -0.2,
+                    ),
                   ),
                 ),
               ],
@@ -160,20 +168,19 @@ class AppBottomNavBar extends StatelessWidget {
             height: 66,
             decoration: BoxDecoration(
               color: isDark
-                  ? AppColors.cardDark.withValues(alpha: 0.75)
-                  : AppColors.cardLight.withValues(alpha: 0.8),
+                  ? AppColors.cardDark.withValues(alpha: 0.85)
+                  : AppColors.cardLight.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.white.withValues(alpha: 0.6),
+                color: AppColors.cardBorder(context),
                 width: 1.2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: (isDark ? Colors.black : const Color(0xFF64748B))
-                      .withValues(alpha: isDark ? 0.35 : 0.12),
-                  blurRadius: 24,
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.35)
+                      : const Color(0xFF1E293B).withValues(alpha: 0.08),
+                  blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
               ],

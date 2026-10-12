@@ -31,20 +31,26 @@ class BalanceSummaryCard extends ConsumerWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
             color: isDark
-                ? AppColors.cardDark.withValues(alpha: 0.75)
-                : AppColors.cardLight.withValues(alpha: 0.8),
+                ? AppColors.cardDark.withValues(alpha: 0.85)
+                : AppColors.cardLight,
             border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.12)
-                  : Colors.white.withValues(alpha: 0.6),
+              color: AppColors.cardBorder(context),
               width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: (isDark ? Colors.black : const Color(0xFF64748B))
-                    .withValues(alpha: isDark ? 0.3 : 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : const Color(0xFF1E293B).withValues(alpha: 0.06),
+                blurRadius: 18,
+                offset: const Offset(0, 6),
+              ),
+              BoxShadow(
+                color: isDark
+                    ? Colors.transparent
+                    : const Color(0xFF1E293B).withValues(alpha: 0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
               ),
             ],
           ),
@@ -59,11 +65,15 @@ class BalanceSummaryCard extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                AppUtils.formatCurrency(balance, currencyCode),
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary(context),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  AppUtils.formatCurrency(balance, currencyCode),
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary(context),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),

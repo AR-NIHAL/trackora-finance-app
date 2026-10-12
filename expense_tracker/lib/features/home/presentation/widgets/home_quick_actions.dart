@@ -42,7 +42,7 @@ class HomeQuickActions extends StatelessWidget {
       children: actions.map((action) {
         return Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 2),
             child: InkWell(
               borderRadius: BorderRadius.circular(18),
               onTap: () {
@@ -50,25 +50,39 @@ class HomeQuickActions extends StatelessWidget {
                   MaterialPageRoute<void>(builder: (context) => action.$4),
                 );
               },
-              child: Column(
-                children: [
-                  Container(
-                    height: 52,
-                    width: 52,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: action.$3.withValues(alpha: 0.14),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: action.$3.withValues(alpha: 0.14),
+                      ),
+                      child: Icon(action.$1, color: action.$3, size: 24),
                     ),
-                    child: Icon(action.$1, color: action.$3),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    action.$2,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          action.$2,
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -183,14 +183,14 @@ final spendingTrendProvider = Provider<List<SpendingPoint>>((ref) {
         ),
     ],
     AnalyticsRange.month => <SpendingPoint>[
-      for (int week = 3; week >= 0; week--)
-        _weekPoint(transactions, now, week),
+      for (int week = 1; week <= 4; week++)
+        _monthWeekPoint(transactions, week),
     ],
     AnalyticsRange.year => <SpendingPoint>[
-      for (int i = 11; i >= 0; i--)
+      for (int m = 1; m <= 12; m++)
         _spendingPoint(
           transactions,
-          DateTime(now.year, now.month - i),
+          DateTime(now.year, m),
           _monthLabel,
           granularity: _Granularity.month,
         ),
@@ -226,15 +226,18 @@ SpendingPoint _spendingPoint(
   return SpendingPoint(label: label(date), value: total);
 }
 
-SpendingPoint _weekPoint(
+SpendingPoint _monthWeekPoint(
   List<TransactionModel> transactions,
-  DateTime now,
   int week,
 ) {
-  final end = now.subtract(Duration(days: week * 7));
-  final start = end.subtract(const Duration(days: 6));
+  final (startDay, endDay) = switch (week) {
+    1 => (1, 7),
+    2 => (8, 14),
+    3 => (15, 21),
+    _ => (22, 31),
+  };
   final total = transactions
-      .where((tx) => !tx.date.isBefore(start) && !tx.date.isAfter(end))
+      .where((tx) => tx.date.day >= startDay && tx.date.day <= endDay)
       .fold(0.0, (sum, tx) => sum + tx.amount);
-  return SpendingPoint(label: 'W${4 - week}', value: total);
+  return SpendingPoint(label: 'W$week', value: total);
 }

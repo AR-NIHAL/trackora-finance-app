@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class HomeSearchField extends StatefulWidget {
@@ -53,7 +54,17 @@ class _HomeSearchFieldState extends State<HomeSearchField> {
         contentPadding: const EdgeInsets.symmetric(vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(
+            color: AppColors.cardBorder(context),
+            width: 1,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(
+            color: AppColors.cardBorder(context),
+            width: 1,
+          ),
         ),
       ),
     );
