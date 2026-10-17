@@ -6,20 +6,25 @@ import 'package:expense_tracker/shared/models/dummy_categories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:expense_tracker/shared/widgets/app_scaffold_background.dart';
+
 class SubscriptionsScreen extends ConsumerWidget {
   const SubscriptionsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final subscriptions = ref.watch(subscriptionsProvider);
     final upcomingTotal = ref.watch(upcomingRecurringExpenseProvider);
     final currencyCode = ref.watch(
       settingsProvider.select((settings) => settings.currencyCode),
     );
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Recurring & Subscriptions')),
+    return AppScaffoldBackground(
+      child: Scaffold(
+        backgroundColor: isDark ? Colors.transparent : null,
+        appBar: AppBar(title: const Text('Recurring & Subscriptions')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -154,6 +159,7 @@ class SubscriptionsScreen extends ConsumerWidget {
             ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

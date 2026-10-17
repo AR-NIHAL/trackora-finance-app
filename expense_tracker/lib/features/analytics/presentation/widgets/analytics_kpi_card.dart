@@ -140,32 +140,53 @@ class AnalyticsKpiCard extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              Row(
-                children: [
-                  Expanded(
-                    child: _KpiChip(
-                      icon: Icons.calendar_today_rounded,
-                      label: 'Daily Avg',
-                      value: AppUtils.formatCurrency(dailyAvg, currencyCode),
-                    ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.04)
+                      : const Color(0xFFF8FAF9),
+                  border: Border.all(
+                    color: AppColors.cardBorder(context),
+                    width: 1,
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _KpiChip(
-                      icon: Icons.trending_up_rounded,
-                      label: peakLabel,
-                      value: peakValue,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _KpiMetricColumn(
+                        icon: Icons.calendar_today_rounded,
+                        label: 'Daily Avg',
+                        value: AppUtils.formatCurrency(dailyAvg, currencyCode),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _KpiChip(
-                      icon: Icons.receipt_long_rounded,
-                      label: 'Txns',
-                      value: '$transactionCount',
+                    Container(
+                      width: 1,
+                      height: 32,
+                      color: AppColors.cardBorder(context),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: _KpiMetricColumn(
+                        icon: Icons.trending_up_rounded,
+                        label: peakLabel,
+                        value: peakValue,
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 32,
+                      color: AppColors.cardBorder(context),
+                    ),
+                    Expanded(
+                      child: _KpiMetricColumn(
+                        icon: Icons.receipt_long_rounded,
+                        label: 'Txns',
+                        value: '$transactionCount',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -175,12 +196,12 @@ class AnalyticsKpiCard extends ConsumerWidget {
   }
 }
 
-class _KpiChip extends StatelessWidget {
+class _KpiMetricColumn extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
 
-  const _KpiChip({
+  const _KpiMetricColumn({
     required this.icon,
     required this.label,
     required this.value,
@@ -189,27 +210,17 @@ class _KpiChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.04)
-            : Colors.black.withValues(alpha: 0.03),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.white.withValues(alpha: 0.6),
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 13, color: AppColors.textMuted(context)),
+              Icon(icon, size: 12, color: AppColors.textMuted(context)),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
@@ -218,20 +229,19 @@ class _KpiChip extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontSize: 11,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.textMuted(context),
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 5),
           FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
             child: Text(
               value,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary(context),

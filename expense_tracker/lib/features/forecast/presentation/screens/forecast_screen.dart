@@ -1,6 +1,7 @@
 import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:expense_tracker/features/forecast/state/forecast_provider.dart';
 import 'package:expense_tracker/features/settings/state/settings_provider.dart';
+import 'package:expense_tracker/shared/widgets/app_scaffold_background.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,14 +12,17 @@ class ForecastScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final points = ref.watch(forecastProvider);
     final summary = ref.watch(forecastSummaryProvider);
     final currencyCode = ref.watch(
       settingsProvider.select((settings) => settings.currencyCode),
     );
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Cash-Flow Forecast')),
+    return AppScaffoldBackground(
+      child: Scaffold(
+        backgroundColor: isDark ? Colors.transparent : null,
+        appBar: AppBar(title: const Text('Cash-Flow Forecast')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -165,8 +169,9 @@ class ForecastScreen extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   double _minBalance(List<ForecastPoint> points) {
     var min = double.infinity;

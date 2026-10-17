@@ -34,6 +34,8 @@ class _HomeSearchFieldState extends State<HomeSearchField> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return TextField(
       controller: widget.controller,
       onChanged: widget.onChanged,
@@ -50,7 +52,7 @@ class _HomeSearchFieldState extends State<HomeSearchField> {
                 },
               ),
         filled: true,
-        fillColor: Theme.of(context).colorScheme.surface,
+        fillColor: isDark ? AppColors.cardDark : AppColors.cardLight,
         contentPadding: const EdgeInsets.symmetric(vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),

@@ -23,18 +23,22 @@ class CategorySpendingCard extends StatelessWidget {
     final category = DummyCategories.findById(categoryId);
     final color = category?.color ?? theme.colorScheme.primary;
 
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
-        color: theme.colorScheme.surface,
+        color: isDark ? AppColors.cardDark : AppColors.cardLight,
         border: Border.all(
           color: AppColors.cardBorder(context),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1E293B).withValues(alpha: 0.04),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.25)
+                : const Color(0xFF1E293B).withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),

@@ -10,6 +10,20 @@ class AppColors {
   static const Color scaffoldLight = Color(0xFFF2F5F3);
   static const Color scaffoldDark = Color(0xFF111418);
 
+  // Dark Mode Ambient Gradient (Deep black at top fading into minimal brand emerald at bottom)
+  static const List<Color> darkGradientColors = [
+    Color(0xFF090B0A), // Black at top
+    Color(0xFF0D1410), // Slow subtle dark transition
+    Color(0xFF13221B), // Minimal deep emerald undertone matching the app
+  ];
+
+  static const LinearGradient darkBackgroundGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: darkGradientColors,
+    stops: [0.0, 0.40, 1.0],
+  );
+
   // Surface / Cards
   static const Color cardLight = Color(0xFFFFFFFF);
   static const Color cardDark = Color(0xFF1A2027);

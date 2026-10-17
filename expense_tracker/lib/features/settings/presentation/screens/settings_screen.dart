@@ -116,7 +116,7 @@ class SettingsScreen extends ConsumerWidget {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -126,6 +126,18 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
 
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'PREFERENCES',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
           SettingsSectionCard(
             children: [
               SettingsSwitchTile(
@@ -172,6 +184,18 @@ class SettingsScreen extends ConsumerWidget {
 
           const SizedBox(height: 24),
 
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'DATA & BACKUP',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
           SettingsSectionCard(
             children: [
               SettingsTile(
@@ -197,6 +221,18 @@ class SettingsScreen extends ConsumerWidget {
 
           const SizedBox(height: 24),
 
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'ABOUT',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
           const AboutAppCard(),
         ],
       ),

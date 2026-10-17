@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class BudgetProgressBar extends StatelessWidget {
@@ -15,6 +16,7 @@ class BudgetProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final safeProgress = progress.clamp(0.0, 1.0);
 
     return Column(
@@ -23,9 +25,8 @@ class BudgetProgressBar extends StatelessWidget {
         Text(
           progressLabel,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: color ?? theme.colorScheme.onPrimaryContainer.withValues(
-              alpha: 0.75,
-            ),
+            color: color ?? AppColors.textMuted(context),
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 8),
@@ -34,8 +35,10 @@ class BudgetProgressBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: safeProgress,
             minHeight: 10,
-            color: color,
-            backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.55),
+            color: color ?? theme.colorScheme.primary,
+            backgroundColor: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFFE2E8E4),
           ),
         ),
       ],

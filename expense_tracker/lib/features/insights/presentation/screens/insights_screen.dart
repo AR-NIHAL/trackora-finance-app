@@ -1,4 +1,5 @@
 import 'package:expense_tracker/features/insights/state/insights_provider.dart';
+import 'package:expense_tracker/shared/widgets/app_scaffold_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,10 +9,13 @@ class InsightsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final insights = ref.watch(insightsProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Smart Insights')),
+    return AppScaffoldBackground(
+      child: Scaffold(
+        backgroundColor: isDark ? Colors.transparent : null,
+        appBar: AppBar(title: const Text('Smart Insights')),
       body: insights.isEmpty
           ? Center(
               child: Text(
@@ -80,6 +84,7 @@ class InsightsScreen extends ConsumerWidget {
                 );
               },
             ),
+      ),
     );
   }
 }

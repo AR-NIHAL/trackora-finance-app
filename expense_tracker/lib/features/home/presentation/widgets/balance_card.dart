@@ -83,7 +83,6 @@ class BalanceSummaryCard extends ConsumerWidget {
                     child: AmountOverviewChip(
                       title: 'Month Income',
                       amount: AppUtils.formatCurrency(monthIncome, currencyCode),
-                      icon: Icons.arrow_downward_rounded,
                       accentColor: AppColors.income(context),
                     ),
                   ),
@@ -92,7 +91,6 @@ class BalanceSummaryCard extends ConsumerWidget {
                     child: AmountOverviewChip(
                       title: 'Month Expense',
                       amount: AppUtils.formatCurrency(monthExpense, currencyCode),
-                      icon: Icons.arrow_upward_rounded,
                       accentColor: AppColors.expense(context),
                     ),
                   ),

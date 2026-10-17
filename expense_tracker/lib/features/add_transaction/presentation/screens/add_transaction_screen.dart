@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/core/utils/app_utils.dart';
 import 'package:expense_tracker/features/add_transaction/state/transaction_provider.dart';
 import 'package:expense_tracker/features/add_transaction/presentation/widgets/transaction_type_selector.dart';
@@ -113,8 +114,10 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
       child: Form(
         key: _formKey,
         child: Column(
@@ -188,7 +191,11 @@ class _AddTransactionScreenState extends ConsumerState<AddTransactionScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18),
-                color: Theme.of(context).colorScheme.surface,
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
+                border: Border.all(
+                  color: AppColors.cardBorder(context),
+                  width: 1,
+                ),
               ),
               child: SwitchListTile(
                 value: _isRecurring,

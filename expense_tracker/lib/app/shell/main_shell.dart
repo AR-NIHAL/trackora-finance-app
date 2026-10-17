@@ -7,6 +7,8 @@ import '../../features/add_transaction/presentation/screens/add_transaction_scre
 import '../../features/budget/presentation/screens/budget_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
+import '../../shared/widgets/app_scaffold_background.dart';
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -41,15 +43,20 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      body: SafeArea(
-        bottom: false,
-        child: _buildCurrentScreen(),
-      ),
-      bottomNavigationBar: AppBottomNavBar(
-        currentTab: _currentTab,
-        onTabSelected: _onTabSelected,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return AppScaffoldBackground(
+      child: Scaffold(
+        backgroundColor: isDark ? Colors.transparent : null,
+        extendBody: true,
+        body: SafeArea(
+          bottom: false,
+          child: _buildCurrentScreen(),
+        ),
+        bottomNavigationBar: AppBottomNavBar(
+          currentTab: _currentTab,
+          onTabSelected: _onTabSelected,
+        ),
       ),
     );
   }

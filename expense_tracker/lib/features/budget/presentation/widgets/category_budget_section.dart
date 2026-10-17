@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/features/budget/presentation/widgets/category_budget_card.dart';
 import 'package:expense_tracker/features/budget/presentation/widgets/budget_form_dialog.dart';
 import 'package:expense_tracker/features/budget/state/budget_provider.dart';
@@ -10,6 +11,8 @@ class CategoryBudgetSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final statusList = ref.watch(budgetStatusListProvider);
 
     return Column(
@@ -20,9 +23,9 @@ class CategoryBudgetSection extends ConsumerWidget {
           children: [
             Text(
               'Category Budgets',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
             ),
             TextButton.icon(
               onPressed: () => _openForm(context, ref),
@@ -33,18 +36,57 @@ class CategoryBudgetSection extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         if (statusList.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Center(
-              child: Text(
-                'No budgets set. Tap "Add" to set a monthly limit for a category.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              color: isDark ? AppColors.cardDark : AppColors.cardLight,
+              border: Border.all(
+                color: AppColors.cardBorder(context),
+                width: 1.2,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.2)
+                      : const Color(0xFF1E293B).withValues(alpha: 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Container(
+                  height: 48,
+                  width: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                  ),
+                  child: Icon(
+                    Icons.pie_chart_outline_rounded,
+                    color: theme.colorScheme.primary,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'No budgets set',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'No budgets set. Tap "Add" to set a monthly limit for a category.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.textMuted(context),
+                  ),
+                ),
+              ],
             ),
           )
         else

@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/features/insights/presentation/screens/insights_screen.dart';
 import 'package:expense_tracker/features/insights/state/insights_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ class InsightsPreview extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final insights = ref.watch(insightsProvider);
     final preview = insights.take(3).toList();
 
@@ -46,15 +48,32 @@ class InsightsPreview extends ConsumerWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
-              color: insight.color.withValues(alpha: 0.10),
+              color: isDark ? AppColors.cardDark : AppColors.cardLight,
               border: Border.all(
-                color: insight.color.withValues(alpha: 0.25),
+                color: AppColors.cardBorder(context),
                 width: 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark
+                      ? Colors.black.withValues(alpha: 0.2)
+                      : const Color(0xFF1E293B).withValues(alpha: 0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Row(
               children: [
-                Icon(insight.icon, color: insight.color),
+                Container(
+                  height: 38,
+                  width: 38,
+                  decoration: BoxDecoration(
+                    color: insight.color.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(insight.icon, color: insight.color, size: 20),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(

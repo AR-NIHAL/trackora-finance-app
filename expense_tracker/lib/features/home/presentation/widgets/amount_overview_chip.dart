@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 class AmountOverviewChip extends StatelessWidget {
   final String title;
   final String amount;
-  final IconData icon;
+  final IconData? icon;
   final Color? accentColor;
 
   const AmountOverviewChip({
     super.key,
     required this.title,
     required this.amount,
-    required this.icon,
+    this.icon,
     this.accentColor,
   });
 
@@ -20,9 +20,9 @@ class AmountOverviewChip extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         color: isDark
             ? Colors.white.withValues(alpha: 0.05)
             : (accentColor != null
@@ -39,23 +39,26 @@ class AmountOverviewChip extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            height: 34,
-            width: 34,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: accentColor != null
-                  ? accentColor!.withValues(alpha: isDark ? 0.22 : 0.12)
-                  : theme.colorScheme.surface,
+          if (icon != null) ...[
+            Container(
+              height: 32,
+              width: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: accentColor != null
+                    ? accentColor!.withValues(alpha: isDark ? 0.22 : 0.12)
+                    : theme.colorScheme.surface,
+              ),
+              child: Icon(
+                icon,
+                size: 16,
+                color: accentColor ?? theme.colorScheme.onSurface,
+              ),
             ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: accentColor ?? theme.colorScheme.onSurface,
-            ),
-          ),
-          const SizedBox(height: 12),
+            const SizedBox(height: 10),
+          ],
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
@@ -63,11 +66,13 @@ class AmountOverviewChip extends StatelessWidget {
               title,
               maxLines: 1,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
               ),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
@@ -75,8 +80,10 @@ class AmountOverviewChip extends StatelessWidget {
               amount,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontSize: 19,
                 fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
                 color: accentColor ?? theme.colorScheme.onSurface,
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class SettingsSectionCard extends StatelessWidget {
@@ -7,17 +8,26 @@ class SettingsSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        color: Theme.of(context).colorScheme.surface,
+        color: isDark ? AppColors.cardDark : AppColors.cardLight,
+        border: Border.all(
+          color: AppColors.cardBorder(context),
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.25)
+                : const Color(0xFF1E293B).withValues(alpha: 0.04),
             blurRadius: 14,
-            offset: const Offset(0, 6),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -38,9 +48,7 @@ class SettingsSectionCard extends StatelessWidget {
             child: Divider(
               height: 1,
               thickness: 1,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.06),
+              color: AppColors.cardBorder(context),
             ),
           ),
         );

@@ -1,3 +1,4 @@
+import 'package:expense_tracker/app/theme/app_colors.dart';
 import 'package:expense_tracker/features/analytics/state/analytics_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ class AnalyticsFilterTabs extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final selected = ref.watch(analyticsRangeProvider);
 
     final filters = <(AnalyticsRange, String)>[
@@ -16,10 +18,14 @@ class AnalyticsFilterTabs extends ConsumerWidget {
     ];
 
     return Container(
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        color: isDark ? AppColors.cardDark : AppColors.cardLight,
+        border: Border.all(
+          color: AppColors.cardBorder(context),
+          width: 1.2,
+        ),
       ),
       child: Row(
         children: filters.map((entry) {
@@ -32,21 +38,34 @@ class AnalyticsFilterTabs extends ConsumerWidget {
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                   color: isSelected
                       ? Theme.of(context).colorScheme.primary
                       : Colors.transparent,
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.25),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Text(
                   entry.$2,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     color: isSelected
-                        ? Theme.of(context).colorScheme.onPrimary
-                        : Theme.of(context).colorScheme.onSurface,
+                        ? Colors.white
+                        : AppColors.textMuted(context),
                   ),
                 ),
               ),

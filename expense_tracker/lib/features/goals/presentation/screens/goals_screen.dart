@@ -5,6 +5,7 @@ import 'package:expense_tracker/features/goals/presentation/widgets/goal_form_di
 import 'package:expense_tracker/features/goals/state/goal_provider.dart';
 import 'package:expense_tracker/features/settings/state/settings_provider.dart';
 import 'package:expense_tracker/shared/models/saving_goal_model.dart';
+import 'package:expense_tracker/shared/widgets/app_scaffold_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -47,13 +48,16 @@ class GoalsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final goals = ref.watch(goalProvider).goals;
     final currencyCode = ref.watch(
       settingsProvider.select((settings) => settings.currencyCode),
     );
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Saving Goals')),
+    return AppScaffoldBackground(
+      child: Scaffold(
+        backgroundColor: isDark ? Colors.transparent : null,
+        appBar: AppBar(title: const Text('Saving Goals')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(context, ref),
         icon: const Icon(Icons.add_rounded),
@@ -231,6 +235,7 @@ class GoalsScreen extends ConsumerWidget {
                 );
               },
             ),
+      ),
     );
   }
 }

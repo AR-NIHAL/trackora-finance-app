@@ -32,7 +32,7 @@ class AppBottomNavBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           onTap: () => onTabSelected(tab),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            padding: const EdgeInsets.symmetric(vertical: 4),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -41,22 +41,22 @@ class AppBottomNavBar extends StatelessWidget {
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeInOut,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
+                    horizontal: 10,
+                    vertical: 3,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? primaryColor.withValues(alpha: 0.12)
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     isSelected ? selectedIcon : icon,
                     color: isSelected ? primaryColor : unselectedColor,
-                    size: 22,
+                    size: 21,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 1),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
@@ -96,8 +96,8 @@ class AppBottomNavBar extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 32,
+                  height: 32,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isSelected
@@ -121,10 +121,10 @@ class AppBottomNavBar extends StatelessWidget {
                   child: const Icon(
                     Icons.add_rounded,
                     color: Colors.white,
-                    size: 22,
+                    size: 20,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 1),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
@@ -165,7 +165,7 @@ class AppBottomNavBar extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
           child: Container(
-            height: 66,
+            height: 68,
             decoration: BoxDecoration(
               color: isDark
                   ? AppColors.cardDark.withValues(alpha: 0.85)

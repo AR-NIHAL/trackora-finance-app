@@ -82,7 +82,7 @@ final insightsProvider = Provider<List<Insight>>((ref) {
     insights.add(
       Insight(
         icon: Icons.local_fire_department_rounded,
-        color: Colors.redAccent,
+        color: const Color(0xFFF59E0B),
         title: '$streak-day no-spend streak',
         message: 'No expenses for $streak consecutive days. Keep it up!',
       ),
